@@ -1,0 +1,629 @@
+---
+import Layout from '../layouts/Layout.astro';
+import itemsData from '../../../backend/items.json';
+
+// Build Schema.org ItemList for machine readability
+const itemListSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "FurnitureStore",
+      "@id": "https://oaklinefurniture.example/#store",
+      "name": "Oakline Furniture",
+      "description": "Solid-wood furniture made in small batches in Grand Rapids, Michigan. Twelve pieces, built to order.",
+      "url": "https://oaklinefurniture.example/",
+      "telephone": "+1-616-555-0142",
+      "priceRange": "$340-$2,480",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "418 Wealthy Street SE",
+        "addressLocality": "Grand Rapids",
+        "addressRegion": "MI",
+        "postalCode": "49503",
+        "addressCountry": "US"
+      },
+      "openingHours": "Tu-Sa 10:00-18:00"
+    },
+    {
+      "@type": "ItemList",
+      "@id": "https://oaklinefurniture.example/#catalogue",
+      "name": "Oakline Furniture Catalogue",
+      "numberOfItems": itemsData.length,
+      "itemListElement": itemsData.map((item, index) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "item": {
+          "@type": "Product",
+          "@id": `https://oaklinefurniture.example/product/${item.slug}`,
+          "name": item.name,
+          "category": item.category,
+          "material": item.material,
+          "color": item.color,
+          "description": item.shortDescription,
+          "image": `https://oaklinefurniture.example${item.image}`,
+          "brand": {
+            "@type": "Brand",
+            "name": "Oakline"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": item.price.toFixed(2),
+            "priceCurrency": "USD",
+            "availability": item.schemaAvailability
+          }
+        }
+      }))
+    }
+  ]
+};
+---
+
+<Layout jsonLd={itemListSchema}>
+  <main id="top" class="main-container">
+    
+    <!-- Hero Header -->
+    <section aria-labelledby="intro-h" class="hero-section">
+      <div>
+        <p class="subtitle">Grand Rapids, Michigan · Est. 2014</p>
+        <h1 id="intro-h" class="hero-title">Twelve pieces of solid-wood furniture. Nothing else.</h1>
+      </div>
+      <div class="hero-body">
+        <p>We keep one small catalogue and build every order by hand in our shop on Wealthy Street. Everything on this page is in stock or made to order in four to six weeks, shipped flat-packed or delivered fully assembled within Michigan.</p>
+        
+        <div class="machine-notice" aria-label="AI and machine readability notice">
+          <span class="notice-badge">Machine Readable</span>
+          <span>Pre-rendered static HTML &amp; JSON-LD data. View <a href="/llms.txt" target="_blank">llms.txt</a> or <a href="/products.json" target="_blank">products.json</a>.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Search & Filter Controls -->
+    <section aria-label="Filter catalogue" class="filter-controls">
+      <form role="search" id="search-form" class="search-form" action="#" onsubmit="return false;">
+        <span aria-hidden="true" class="search-icon">⌕</span>
+        <label for="q" class="sr-only">Search catalogue by name, material or room</label>
+        <input 
+          id="q" 
+          name="q" 
+          type="search" 
+          placeholder="Search 12 pieces — “oak table”, “bedroom”, “under $500”" 
+          autocomplete="off" 
+          class="search-input"
+        />
+      </form>
+
+      <nav aria-label="Browse by category" class="category-nav" id="category-nav">
+        <button type="button" class="chip active" data-cat="all">All 12</button>
+        <button type="button" class="chip" data-cat="tables">Tables</button>
+        <button type="button" class="chip" data-cat="seating">Seating</button>
+        <button type="button" class="chip" data-cat="storage">Storage</button>
+        <button type="button" class="chip" data-cat="bedroom">Bedroom &amp; lighting</button>
+      </nav>
+    </section>
+
+    <!-- Product Catalogue Grid -->
+    <section id="catalogue" aria-labelledby="cat-h" class="catalogue-section">
+      <div class="catalogue-header">
+        <h2 id="cat-h" class="section-title">The catalogue</h2>
+        <p id="count-label" aria-live="polite" class="count-label">Showing all 12 pieces</p>
+      </div>
+
+      <ul id="product-grid" class="product-grid">
+        {itemsData.map((item) => (
+          <li data-cat={item.categorySlug} data-search={item.searchTerms}>
+            <article class="product-card">
+              <a href={`/product/${item.slug}`} class="card-image-link" aria-label={`View details for ${item.name}`}>
+                <div class="card-image-wrapper">
+                  <img src={item.image} alt={`${item.name} handcrafted from ${item.material}`} loading="lazy" />
+                  <span class="view-detail-badge">View Specs &rarr;</span>
+                </div>
+              </a>
+              
+              <div class="card-content">
+                <header class="card-header">
+                  <span class="category-tag">{item.category}</span>
+                  <h3 class="product-name">
+                    <a href={`/product/${item.slug}`}>{item.name}</a>
+                  </h3>
+                </header>
+                
+                <p class="product-desc">{item.shortDescription}</p>
+
+                <ul class="spec-list" aria-label="Key specifications">
+                  {item.highlights.map(h => (
+                    <li>{h}</li>
+                  ))}
+                </ul>
+
+                <div class="card-footer">
+                  <data value={item.price.toString()} class="product-price">{item.formattedPrice}</data>
+                  <span class={`stock-badge ${item.inStock ? 'in-stock' : 'pre-order'}`}>
+                    {item.availability}
+                  </span>
+                </div>
+              </div>
+            </article>
+          </li>
+        ))}
+      </ul>
+
+      <div id="no-results" class="no-results" style="display: none;">
+        <p>No piece matches that search query. Try “oak”, “bedroom”, or <a href="#about">email the shop</a> — we take custom commissions.</p>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" aria-labelledby="about-h" class="about-section">
+      <div class="about-column">
+        <h2 id="about-h" class="section-title">About us</h2>
+        <p class="about-text">Oakline is a two-person shop. Dana mills and joins; Peter finishes and delivers. We have made furniture on Wealthy Street since 2014, from hardwood bought within 200 miles of the shop.</p>
+        <p class="about-text">Every joint is mechanical — mortise, tenon, dovetail — so a piece can be taken apart and repaired instead of replaced. Send us a photo if something breaks, whenever that happens; repairs on our own work are free for the first ten years.</p>
+      </div>
+      
+      <div class="contact-column">
+        <h3 class="subhead">Visit or write</h3>
+        <address class="contact-address">
+          <ul>
+            <li>418 Wealthy Street SE<br />Grand Rapids, MI 49503</li>
+            <li>Tuesday–Saturday, 10am–6pm</li>
+            <li>Phone: <a href="tel:+16165550142">(616) 555-0142</a></li>
+            <li>Email: <a href="mailto:shop@oaklinefurniture.example">shop@oaklinefurniture.example</a></li>
+          </ul>
+        </address>
+        <p class="shipping-info">Free delivery and assembly within 90 miles. Flat-rate $180 crating anywhere else in the lower 48.</p>
+      </div>
+    </section>
+
+  </main>
+</Layout>
+
+<style>
+  .main-container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 28px 96px;
+  }
+
+  .hero-section {
+    padding: 64px 0 44px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 56px;
+    align-items: flex-end;
+  }
+
+  .subtitle {
+    margin-bottom: 18px;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    font-weight: 500;
+  }
+
+  .hero-title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(44px, 5.5vw, 76px);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    color: var(--text-dark);
+  }
+
+  .hero-body {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    max-width: 44ch;
+  }
+
+  .machine-notice {
+    margin-top: 24px;
+    padding: 12px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text-subtle);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .notice-badge {
+    background: var(--accent-terracotta);
+    color: #FFF;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .filter-controls {
+    padding: 0 0 34px;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .search-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-input);
+    border-radius: 999px;
+    padding: 0 20px;
+    height: 54px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .search-form:focus-within {
+    border-color: var(--accent-terracotta);
+    box-shadow: 0 0 0 3px rgba(163, 77, 51, 0.12);
+  }
+
+  .search-icon {
+    font-size: 20px;
+    color: var(--text-subtle);
+  }
+
+  .search-input {
+    flex: 1;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    color: var(--text-dark);
+    min-width: 0;
+  }
+
+  .category-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .chip {
+    background: transparent;
+    border: 1px solid var(--border-input);
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .chip:hover, .chip.active {
+    background: var(--text-dark);
+    color: var(--bg-main);
+    border-color: var(--text-dark);
+  }
+
+  .catalogue-section {
+    padding: 44px 0 0;
+  }
+
+  .catalogue-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .section-title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 38px;
+    letter-spacing: -0.01em;
+    color: var(--text-dark);
+  }
+
+  .count-label {
+    font-size: 14px;
+    color: var(--text-subtle);
+  }
+
+  .product-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 44px 34px;
+  }
+
+  .product-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+  }
+
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(28, 26, 23, 0.3);
+  }
+
+  .card-image-link {
+    display: block;
+    overflow: hidden;
+  }
+
+  .card-image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: #EAE3D9;
+    overflow: hidden;
+  }
+
+  .card-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .product-card:hover .card-image-wrapper img {
+    transform: scale(1.04);
+  }
+
+  .view-detail-badge {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(28, 26, 23, 0.85);
+    color: #FFF;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 999px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: all 0.25s ease;
+  }
+
+  .product-card:hover .view-detail-badge {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .card-content {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .category-tag {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .product-name {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 26px;
+    margin-bottom: 10px;
+    line-height: 1.15;
+  }
+
+  .product-name a {
+    color: var(--text-dark);
+    text-decoration: none;
+  }
+
+  .product-name a:hover {
+    color: var(--accent-terracotta);
+    text-decoration: underline;
+  }
+
+  .product-desc {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    flex-grow: 1;
+  }
+
+  .spec-list {
+    list-style: none;
+    margin-bottom: 20px;
+    padding: 12px 0 0;
+    border-top: 1px dashed var(--border-subtle);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-size: 13px;
+    color: var(--text-subtle);
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 12px;
+  }
+
+  .product-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+
+  .stock-badge {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+
+  .stock-badge.in-stock {
+    background: rgba(47, 107, 79, 0.08);
+    color: var(--accent-green);
+  }
+
+  .stock-badge.pre-order {
+    background: rgba(163, 77, 51, 0.08);
+    color: var(--accent-terracotta);
+  }
+
+  .no-results {
+    margin-top: 44px;
+    padding: 32px;
+    border: 1px dashed var(--border-input);
+    border-radius: 8px;
+    font-size: 16px;
+    color: var(--text-muted);
+    text-align: center;
+    background: var(--bg-card);
+  }
+
+  .about-section {
+    margin-top: 96px;
+    padding-top: 64px;
+    border-top: 1px solid var(--border-subtle);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 56px;
+  }
+
+  .about-text {
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--text-muted);
+    margin-top: 16px;
+  }
+
+  .subhead {
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    margin-bottom: 16px;
+  }
+
+  .contact-address ul {
+    list-style: none;
+    display: grid;
+    gap: 12px;
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--text-muted);
+    font-style: normal;
+  }
+
+  .shipping-info {
+    margin-top: 24px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-subtle);
+  }
+
+  .sr-only {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+  }
+
+  @media (max-width: 1024px) {
+    .product-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-section, .about-section {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .product-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<!-- Progressive Enhancement Script for Dynamic Search & Category Filtering -->
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('q');
+    const categoryChips = document.querySelectorAll('#category-nav .chip');
+    const productGrid = document.getElementById('product-grid');
+    const countLabel = document.getElementById('count-label');
+    const noResults = document.getElementById('no-results');
+
+    if (!productGrid) return;
+    const items = Array.from(productGrid.children);
+    let activeCategory = 'all';
+
+    function filterProducts() {
+      const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
+      let shownCount = 0;
+
+      items.forEach(li => {
+        const itemCat = li.getAttribute('data-cat') || '';
+        const searchHaystack = (li.getAttribute('data-search') || '') + ' ' + li.textContent.toLowerCase();
+        
+        const matchesCategory = activeCategory === 'all' || itemCat === activeCategory;
+        const matchesQuery = !query || searchHaystack.includes(query);
+
+        if (matchesCategory && matchesQuery) {
+          li.style.display = '';
+          shownCount++;
+        } else {
+          li.style.display = 'none';
+        }
+      });
+
+      if (countLabel) {
+        if (shownCount === items.length) {
+          countLabel.textContent = `Showing all ${items.length} pieces`;
+        } else if (shownCount === 1) {
+          countLabel.textContent = '1 piece matches search';
+        } else {
+          countLabel.textContent = `${shownCount} pieces match search`;
+        }
+      }
+
+      if (noResults) {
+        noResults.style.display = shownCount === 0 ? 'block' : 'none';
+      }
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', filterProducts);
+    }
+
+    categoryChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        categoryChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        activeCategory = chip.getAttribute('data-cat') || 'all';
+        filterProducts();
+      });
+    });
+  });
+</script>

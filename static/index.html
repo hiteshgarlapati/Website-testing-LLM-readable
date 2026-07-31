@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oakline Furniture — 12 solid-wood pieces, made in Grand Rapids, Michigan</title>
+<meta name="description" content="Oakline Furniture is a two-person shop in Grand Rapids, Michigan making 12 solid-wood pieces: dining tables, chairs, storage, beds and lighting. Prices $340–$2,480, in stock or made to order in 4–6 weeks.">
+<link rel="canonical" href="https://oaklinefurniture.example/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  [hidden] { display:none !important; }
+  /* Hover, focus and responsive rules — the only CSS that cannot be inline.
+     No styling here is required for the content to be readable. */
+  a[href="#about"]:hover, nav[aria-label="Browse by room"] a:hover { background:#1C1A17; color:#F6F2EC; text-decoration:none; }
+  form[role="search"]:focus-within { border-color:#A34D33; }
+  a[href="#catalogue"]:focus { left:12px !important; top:12px !important; z-index:50; }
+  @media (max-width: 1080px) { #catalogue > ul { grid-template-columns:repeat(2,minmax(0,1fr)) !important; } main > section:first-of-type, #about { grid-template-columns:minmax(0,1fr) !important; gap:28px !important; } }
+  @media (max-width: 640px) { #catalogue > ul { grid-template-columns:minmax(0,1fr) !important; } }
+
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: #F6F2EC; color: #1C1A17; font-family: "Instrument Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: #A34D33; text-decoration: none; }
+  a:hover { color: #1C1A17; text-decoration: underline; }
+  * { box-sizing: border-box; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "FurnitureStore",
+      "@id": "https://oaklinefurniture.example/#store",
+      "name": "Oakline Furniture",
+      "description": "Solid-wood furniture made in small batches in Grand Rapids, Michigan. Twelve pieces, built to order.",
+      "url": "https://oaklinefurniture.example/",
+      "telephone": "+1-616-555-0142",
+      "priceRange": "$340-$2,480",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "418 Wealthy Street SE",
+        "addressLocality": "Grand Rapids",
+        "addressRegion": "MI",
+        "postalCode": "49503",
+        "addressCountry": "US"
+      },
+      "openingHours": "Tu-Sa 10:00-18:00"
+    },
+    {
+      "@type": "ItemList",
+      "name": "Oakline Furniture catalogue",
+      "numberOfItems": 12,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "item": { "@type": "Product", "name": "Alder Dining Table", "category": "Tables", "material": "Solid white oak", "color": "Natural oak", "brand": { "@type": "Brand", "name": "Oakline" }, "offers": { "@type": "Offer", "price": "2480.00", "priceCurrency": "USD", "availability": "https://schema.org/InStock" } } },
+        { "@type": "ListItem", "position": 2, "item": { "@type": "Product", "name": "Mill Lounge Chair", "category": "Seating", "material": "Ash frame, wool bouclé", "color": "Oat", "brand": { "@type": "Brand", "name": "Oakline" }, "offers": { "@type": "Offer", "price": "1140.00", "priceCurrency": "USD", "availability": "https://schema.org/InStock" } } },
+        { "@type": "ListItem", "position": 3, "item": { "@type": "Product", "name": "Kestrel Sideboard", "category": "Storage", "material": "Solid walnut", "color": "Walnut", "brand": { "@type": "Brand", "name": "Oakline" }, "offers": { "@type": "Offer", "price": "1980.00", "priceCurrency": "USD", "availability": "https://schema.org/PreOrder" } } },
+        { "@type": "ListItem", "position": 4, "item": { "@type": "Product", "name": "Harbor Bed Frame", "category": "Bedroom", "material": "Solid maple", "color": "Pale maple", "brand": { "@type": "Brand", "name": "Oakline" }, "offers": { "@type": "Offer", "price": "2150.00", "priceCurrency": "USD", "availability": "https://schema.org/InStock" } } },
+        { "@type": "ListItem", "position": 5, "item": { "@type": "Product", "name": "Fenwick Bookcase", "category": "Storage", "material": "Solid white oak", "color": "Natural oak", "brand": { "@type": "Brand", "name": "Oakline" }, "offers": { "@type": "Offer", "price": "1320.00", "priceCurrency": "USD", "availability": "https://schema.org/InStock" } } },
+        { "@type": "ListItem", "position": 6, "item": { "@type": "Product", "name": "Bramble Dining Chair", "category": "Seating", "material": "Steam-bent beech", "color": "Clay", "brand": { "@type": "Brand", "name": "Oakline" }, "offers": { "@type": "Offer", "price": "420.00", "priceCurrency": "USD", "availability": "https://schema.org/InStock" } } },
+        { "@type": "ListItem", "position": 7, "item": { "@type": "Product", "name": "Quarry Coffee Table", "category": "Tables", "material": "Oak and honed limestone", "color": "Stone", "brand": { "@type": "Brand", "name": "Oakline" }, "offers": { "@type": "Offer", "price": "980.00", "priceCurrency": "USD", "availability": "https://schema.org/InStock" } } },
+        { "@type": "ListItem", "position": 8, "item": { "@type": "Product", "name": "Wren Nightstand", "category": "Bedroom", "material": "Solid cherry", "color": "Cherry", "brand": { "@type": "Brand", "name": "Oakline" }, "offers": { "@type": "Offer", "price": "640.00", "priceCurrency": "USD", "availability": "https://schema.org/InStock" } } },
+        { "@type": "ListItem", "position": 9, "item": { "@type": "Product", "name": "Sable Desk", "category": "Tables", "material": "Solid walnut", "color": "Walnut", "brand": { "@type": "Brand", "name": "Oakline" }, "offers": { "@type": "Offer", "price": "1560.00", "priceCurrency": "USD", "availability": "https://schema.org/InStock" } } },
+        { "@type": "ListItem", "position": 10, "item": { "@type": "Product", "name": "Loom Floor Lamp", "category": "Lighting", "material": "Oak and linen shade", "color": "Natural", "brand": { "@type": "Brand", "name": "Oakline" }, "offers": { "@type": "Offer", "price": "460.00", "priceCurrency": "USD", "availability": "https://schema.org/InStock" } } },
+        { "@type": "ListItem", "position": 11, "item": { "@type": "Product", "name": "Ridge Bench", "category": "Seating", "material": "Solid white oak", "color": "Natural oak", "brand": { "@type": "Brand", "name": "Oakline" }, "offers": { "@type": "Offer", "price": "720.00", "priceCurrency": "USD", "availability": "https://schema.org/InStock" } } },
+        { "@type": "ListItem", "position": 12, "item": { "@type": "Product", "name": "Ember Side Table", "category": "Tables", "material": "Turned cherry", "color": "Cherry", "brand": { "@type": "Brand", "name": "Oakline" }, "offers": { "@type": "Offer", "price": "340.00", "priceCurrency": "USD", "availability": "https://schema.org/InStock" } } }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a href="#catalogue" style="position:absolute;left:-9999px;top:0;background:#1C1A17;color:#fff;padding:12px 18px;font-size:14px">Skip to catalogue</a>
+
+<header style="position:sticky;top:0;z-index:30;background:#F6F2EC;border-bottom:1px solid rgba(28,26,23,0.14)">
+  <div style="max-width:1240px;margin:0 auto;padding:18px 28px;display:flex;align-items:center;gap:28px;flex-wrap:wrap">
+    <a href="#top" aria-label="Oakline Furniture — home" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:#1C1A17;flex:none">
+      <span aria-hidden="true" style="width:38px;height:38px;border-radius:50%;background:#A34D33;display:grid;place-items:center;color:#F6F2EC;font-family:'Instrument Serif',serif;font-size:22px;line-height:1;padding-bottom:2px">O</span>
+      <span style="font-family:'Instrument Serif',serif;font-size:27px;letter-spacing:-0.01em;white-space:nowrap">Oakline</span>
+    </a>
+
+    <form role="search" style="flex:1 1 340px;min-width:260px;display:flex;align-items:center;gap:10px;background:#FFFDFA;border:1px solid rgba(28,26,23,0.2);border-radius:999px;padding:0 18px;height:52px">
+      <span aria-hidden="true" style="font-size:17px;color:#7C736A">⌕</span>
+      <label for="q" style="position:absolute;left:-9999px">Search the catalogue by name, material or room</label>
+      <input id="q" name="q" type="search" placeholder="Search 12 pieces — “oak table”, “bedroom”, “under $500”" autocomplete="off" style="flex:1;border:0;outline:0;background:transparent;font:400 16px/1.2 'Instrument Sans',system-ui,sans-serif;color:#1C1A17;min-width:0">
+    </form>
+
+    <a href="#about" style="flex:none;border:1px solid #1C1A17;border-radius:999px;padding:14px 26px;font-size:15px;font-weight:500;color:#1C1A17;text-decoration:none;white-space:nowrap">About us</a>
+  </div>
+</header>
+
+<main id="top" style="max-width:1240px;margin:0 auto;padding:0 28px 96px">
+
+  <section aria-labelledby="intro-h" style="padding:64px 0 44px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:56px;align-items:end">
+    <div>
+      <p style="margin:0 0 18px;font-size:13px;letter-spacing:0.16em;text-transform:uppercase;color:#7C736A">Grand Rapids, Michigan · Est. 2014</p>
+      <h1 id="intro-h" style="margin:0;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(44px,6vw,78px);line-height:0.98;letter-spacing:-0.02em;text-wrap:balance">Twelve pieces of solid-wood furniture. Nothing else.</h1>
+    </div>
+    <p style="margin:0;font-size:18px;line-height:1.6;color:#43403A;text-wrap:pretty;max-width:44ch">We keep one small catalogue and build every order by hand in our shop on Wealthy Street. Everything on this page is in stock or made to order in four to six weeks, shipped flat-packed or delivered fully assembled within Michigan.</p>
+  </section>
+
+  <nav aria-label="Browse by room" style="display:flex;flex-wrap:wrap;gap:10px;padding:0 0 34px;border-bottom:1px solid rgba(28,26,23,0.14)">
+    <a href="#catalogue" style="flex:none;white-space:nowrap;border:1px solid rgba(28,26,23,0.22);border-radius:999px;padding:9px 18px;font-size:14px;color:#1C1A17">All 12</a>
+    <a href="#tables" style="flex:none;white-space:nowrap;border:1px solid rgba(28,26,23,0.22);border-radius:999px;padding:9px 18px;font-size:14px;color:#1C1A17">Tables</a>
+    <a href="#seating" style="flex:none;white-space:nowrap;border:1px solid rgba(28,26,23,0.22);border-radius:999px;padding:9px 18px;font-size:14px;color:#1C1A17">Seating</a>
+    <a href="#storage" style="flex:none;white-space:nowrap;border:1px solid rgba(28,26,23,0.22);border-radius:999px;padding:9px 18px;font-size:14px;color:#1C1A17">Storage</a>
+    <a href="#bedroom" style="flex:none;white-space:nowrap;border:1px solid rgba(28,26,23,0.22);border-radius:999px;padding:9px 18px;font-size:14px;color:#1C1A17">Bedroom &amp; lighting</a>
+  </nav>
+
+  <section id="catalogue" aria-labelledby="cat-h" style="padding:44px 0 0">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:0 0 8px">
+      <h2 id="cat-h" style="margin:0;font-family:'Instrument Serif',serif;font-weight:400;font-size:34px;letter-spacing:-0.01em">The catalogue</h2>
+      <p aria-live="polite" style="margin:0;font-size:14px;color:#7C736A">Showing all 12 pieces</p>
+    </div>
+
+    <div id="tables" style="scroll-margin-top:110px"></div>
+    <ul style="list-style:none;margin:26px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:44px 34px">
+
+      <li data-cat="tables" data-search="alder dining table tables oak seats eight 2480 dining room">
+        <article>
+          <div style="position:relative;width:100%;aspect-ratio:4/3;background:#EAE3D9;border-radius:4px;overflow:hidden">
+            <img src="images/p1.png" alt="Alder Dining Table" width="800" height="600" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+          </div>
+          <h3 style="margin:16px 0 6px;font-family:'Instrument Serif',serif;font-weight:400;font-size:23px">Alder Dining Table</h3>
+          <p style="margin:0 0 10px;font-size:15px;line-height:1.55;color:#43403A;text-wrap:pretty">A 96-inch trestle table in solid white oak, finished with hardwax oil so scratches can be spot-repaired at home.</p>
+          <ul style="list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:#7C736A">
+            <li>Solid white oak</li><li>96 × 38 × 30 in</li><li>Seats 8</li>
+          </ul>
+          <p style="margin:0;display:flex;align-items:baseline;gap:10px"><strong style="font-size:17px;font-weight:600">$2,480</strong><span style="font-size:13px;color:#2F6B4F">In stock</span></p>
+        </article>
+      </li>
+
+      <li data-cat="seating" data-search="mill lounge chair seating ash boucle oat 1140 living room">
+        <article>
+          <div style="position:relative;width:100%;aspect-ratio:4/3;background:#EAE3D9;border-radius:4px;overflow:hidden">
+            <img src="images/p2.png" alt="Mill Lounge Chair" width="800" height="600" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+          </div>
+          <h3 style="margin:16px 0 6px;font-family:'Instrument Serif',serif;font-weight:400;font-size:23px">Mill Lounge Chair</h3>
+          <p style="margin:0 0 10px;font-size:15px;line-height:1.55;color:#43403A;text-wrap:pretty">Low ash frame with a webbed seat and a removable oat bouclé cushion. Comfortable enough to read in for an hour.</p>
+          <ul style="list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:#7C736A">
+            <li>Ash and wool bouclé</li><li>29 × 32 × 28 in</li><li>Cover washable</li>
+          </ul>
+          <p style="margin:0;display:flex;align-items:baseline;gap:10px"><strong style="font-size:17px;font-weight:600">$1,140</strong><span style="font-size:13px;color:#2F6B4F">In stock</span></p>
+        </article>
+      </li>
+
+      <li data-cat="storage" data-search="kestrel sideboard storage walnut dining room 1980 preorder">
+        <article>
+          <div style="position:relative;width:100%;aspect-ratio:4/3;background:#EAE3D9;border-radius:4px;overflow:hidden">
+            <img src="images/p3.png" alt="Kestrel Sideboard" width="800" height="600" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+          </div>
+          <h3 style="margin:16px 0 6px;font-family:'Instrument Serif',serif;font-weight:400;font-size:23px">Kestrel Sideboard</h3>
+          <p style="margin:0 0 10px;font-size:15px;line-height:1.55;color:#43403A;text-wrap:pretty">Four hand-cut dovetailed drawers and two cabinets in solid walnut, sized to fit a 65-inch television on top.</p>
+          <ul style="list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:#7C736A">
+            <li>Solid walnut</li><li>72 × 18 × 32 in</li><li>Cable cutouts</li>
+          </ul>
+          <p style="margin:0;display:flex;align-items:baseline;gap:10px"><strong style="font-size:17px;font-weight:600">$1,980</strong><span style="font-size:13px;color:#A34D33">Made to order · 5 weeks</span></p>
+        </article>
+      </li>
+
+      <li data-cat="bedroom" data-search="harbor bed frame bedroom maple queen king 2150">
+        <article>
+          <div style="position:relative;width:100%;aspect-ratio:4/3;background:#EAE3D9;border-radius:4px;overflow:hidden">
+            <img src="images/p4.png" alt="Harbor Bed Frame" width="800" height="600" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+          </div>
+          <h3 style="margin:16px 0 6px;font-family:'Instrument Serif',serif;font-weight:400;font-size:23px">Harbor Bed Frame</h3>
+          <p style="margin:0 0 10px;font-size:15px;line-height:1.55;color:#43403A;text-wrap:pretty">A slatted maple platform bed with a gently angled headboard. No box spring needed; assembles with six bolts.</p>
+          <ul style="list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:#7C736A">
+            <li>Solid maple</li><li>Queen or king</li><li>13-in clearance</li>
+          </ul>
+          <p style="margin:0;display:flex;align-items:baseline;gap:10px"><strong style="font-size:17px;font-weight:600">$2,150</strong><span style="font-size:13px;color:#2F6B4F">In stock</span></p>
+        </article>
+      </li>
+
+      <li data-cat="storage" data-search="fenwick bookcase storage oak living room 1320 shelves">
+        <article>
+          <div style="position:relative;width:100%;aspect-ratio:4/3;background:#EAE3D9;border-radius:4px;overflow:hidden">
+            <img src="images/p5.png" alt="Fenwick Bookcase" width="800" height="600" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+          </div>
+          <h3 style="margin:16px 0 6px;font-family:'Instrument Serif',serif;font-weight:400;font-size:23px">Fenwick Bookcase</h3>
+          <p style="margin:0 0 10px;font-size:15px;line-height:1.55;color:#43403A;text-wrap:pretty">Five fixed oak shelves in a through-tenon frame. Rigid enough to hold full runs of hardcovers without bowing.</p>
+          <ul style="list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:#7C736A">
+            <li>Solid white oak</li><li>36 × 13 × 78 in</li><li>Wall-anchor kit</li>
+          </ul>
+          <p style="margin:0;display:flex;align-items:baseline;gap:10px"><strong style="font-size:17px;font-weight:600">$1,320</strong><span style="font-size:13px;color:#2F6B4F">In stock</span></p>
+        </article>
+      </li>
+
+      <li data-cat="seating" data-search="bramble dining chair seating beech clay 420 stackable">
+        <article>
+          <div style="position:relative;width:100%;aspect-ratio:4/3;background:#EAE3D9;border-radius:4px;overflow:hidden">
+            <img src="images/p6.png" alt="Bramble Dining Chair" width="800" height="600" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+          </div>
+          <h3 style="margin:16px 0 6px;font-family:'Instrument Serif',serif;font-weight:400;font-size:23px">Bramble Dining Chair</h3>
+          <p style="margin:0 0 10px;font-size:15px;line-height:1.55;color:#43403A;text-wrap:pretty">Steam-bent beech back, paper-cord seat, clay-washed finish. Sold singly so you can build a mismatched set.</p>
+          <ul style="list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:#7C736A">
+            <li>Steam-bent beech</li><li>18 × 20 × 32 in</li><li>11 lb</li>
+          </ul>
+          <p style="margin:0;display:flex;align-items:baseline;gap:10px"><strong style="font-size:17px;font-weight:600">$420</strong><span style="font-size:13px;color:#2F6B4F">In stock</span></p>
+        </article>
+      </li>
+
+      <li data-cat="tables" data-search="quarry coffee table tables oak limestone stone living room 980">
+        <article>
+          <div style="position:relative;width:100%;aspect-ratio:4/3;background:#EAE3D9;border-radius:4px;overflow:hidden">
+            <img src="images/p7.png" alt="Quarry Coffee Table" width="800" height="600" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+          </div>
+          <h3 style="margin:16px 0 6px;font-family:'Instrument Serif',serif;font-weight:400;font-size:23px">Quarry Coffee Table</h3>
+          <p style="margin:0 0 10px;font-size:15px;line-height:1.55;color:#43403A;text-wrap:pretty">An oak apron carrying a honed limestone top. Heavy on purpose — it stays put when children climb on it.</p>
+          <ul style="list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:#7C736A">
+            <li>Oak and limestone</li><li>48 × 26 × 16 in</li><li>Sealed stone</li>
+          </ul>
+          <p style="margin:0;display:flex;align-items:baseline;gap:10px"><strong style="font-size:17px;font-weight:600">$980</strong><span style="font-size:13px;color:#2F6B4F">In stock</span></p>
+        </article>
+      </li>
+
+      <li data-cat="bedroom" data-search="wren nightstand bedroom cherry drawer 640">
+        <article>
+          <div style="position:relative;width:100%;aspect-ratio:4/3;background:#EAE3D9;border-radius:4px;overflow:hidden">
+            <img src="images/p8.png" alt="Wren Nightstand" width="800" height="600" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+          </div>
+          <h3 style="margin:16px 0 6px;font-family:'Instrument Serif',serif;font-weight:400;font-size:23px">Wren Nightstand</h3>
+          <p style="margin:0 0 10px;font-size:15px;line-height:1.55;color:#43403A;text-wrap:pretty">One soft-close cherry drawer over an open shelf, with a notch at the back for a phone cable.</p>
+          <ul style="list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:#7C736A">
+            <li>Solid cherry</li><li>18 × 16 × 24 in</li><li>Left or right notch</li>
+          </ul>
+          <p style="margin:0;display:flex;align-items:baseline;gap:10px"><strong style="font-size:17px;font-weight:600">$640</strong><span style="font-size:13px;color:#2F6B4F">In stock</span></p>
+        </article>
+      </li>
+
+      <li data-cat="tables" data-search="sable desk tables walnut office study 1560">
+        <article>
+          <div style="position:relative;width:100%;aspect-ratio:4/3;background:#EAE3D9;border-radius:4px;overflow:hidden">
+            <img src="images/p9.png" alt="Sable Desk" width="800" height="600" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+          </div>
+          <h3 style="margin:16px 0 6px;font-family:'Instrument Serif',serif;font-weight:400;font-size:23px">Sable Desk</h3>
+          <p style="margin:0 0 10px;font-size:15px;line-height:1.55;color:#43403A;text-wrap:pretty">Walnut writing desk with a shallow pencil drawer and a wire channel hidden along the back rail.</p>
+          <ul style="list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:#7C736A">
+            <li>Solid walnut</li><li>54 × 28 × 30 in</li><li>Wire channel</li>
+          </ul>
+          <p style="margin:0;display:flex;align-items:baseline;gap:10px"><strong style="font-size:17px;font-weight:600">$1,560</strong><span style="font-size:13px;color:#2F6B4F">In stock</span></p>
+        </article>
+      </li>
+
+      <li data-cat="bedroom" data-search="loom floor lamp lighting oak linen shade 460">
+        <article>
+          <div style="position:relative;width:100%;aspect-ratio:4/3;background:#EAE3D9;border-radius:4px;overflow:hidden">
+            <img src="images/p10.png" alt="Loom Floor Lamp" width="800" height="600" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+          </div>
+          <h3 style="margin:16px 0 6px;font-family:'Instrument Serif',serif;font-weight:400;font-size:23px">Loom Floor Lamp</h3>
+          <p style="margin:0 0 10px;font-size:15px;line-height:1.55;color:#43403A;text-wrap:pretty">Turned oak column, unbleached linen shade, foot-switch on the cord. Takes a standard E26 bulb.</p>
+          <ul style="list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:#7C736A">
+            <li>Oak and linen</li><li>58 in tall</li><li>E26 socket</li>
+          </ul>
+          <p style="margin:0;display:flex;align-items:baseline;gap:10px"><strong style="font-size:17px;font-weight:600">$460</strong><span style="font-size:13px;color:#2F6B4F">In stock</span></p>
+        </article>
+      </li>
+
+      <li data-cat="seating" data-search="ridge bench seating oak entryway hallway 720">
+        <article>
+          <div style="position:relative;width:100%;aspect-ratio:4/3;background:#EAE3D9;border-radius:4px;overflow:hidden">
+            <img src="images/p11.png" alt="Ridge Bench" width="800" height="600" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+          </div>
+          <h3 style="margin:16px 0 6px;font-family:'Instrument Serif',serif;font-weight:400;font-size:23px">Ridge Bench</h3>
+          <p style="margin:0 0 10px;font-size:15px;line-height:1.55;color:#43403A;text-wrap:pretty">A single slab of oak on splayed legs. Works at the end of a bed, in an entryway, or as extra dining seating.</p>
+          <ul style="list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:#7C736A">
+            <li>Solid white oak</li><li>60 × 14 × 18 in</li><li>Seats 2–3</li>
+          </ul>
+          <p style="margin:0;display:flex;align-items:baseline;gap:10px"><strong style="font-size:17px;font-weight:600">$720</strong><span style="font-size:13px;color:#2F6B4F">In stock</span></p>
+        </article>
+      </li>
+
+      <li data-cat="tables" data-search="ember side table tables cherry small 340 under 500">
+        <article>
+          <div style="position:relative;width:100%;aspect-ratio:4/3;background:#EAE3D9;border-radius:4px;overflow:hidden">
+            <img src="images/p12.png" alt="Ember Side Table" width="800" height="600" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+          </div>
+          <h3 style="margin:16px 0 6px;font-family:'Instrument Serif',serif;font-weight:400;font-size:23px">Ember Side Table</h3>
+          <p style="margin:0 0 10px;font-size:15px;line-height:1.55;color:#43403A;text-wrap:pretty">A small turned cherry pedestal, light enough to move with one hand and tall enough to reach over a sofa arm.</p>
+          <ul style="list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:#7C736A">
+            <li>Turned cherry</li><li>16 in diameter</li><li>24 in tall</li>
+          </ul>
+          <p style="margin:0;display:flex;align-items:baseline;gap:10px"><strong style="font-size:17px;font-weight:600">$340</strong><span style="font-size:13px;color:#2F6B4F">In stock</span></p>
+        </article>
+      </li>
+    </ul>
+
+    <p hidden style="margin:44px 0 0;padding:28px;border:1px dashed rgba(28,26,23,0.28);border-radius:6px;font-size:16px;color:#43403A">No piece matches that search. Try “oak”, “bedroom”, or <a href="#about">email the shop</a> — we take custom commissions.</p>
+  </section>
+
+  <section id="about" aria-labelledby="about-h" style="margin:96px 0 0;padding:56px 0 0;border-top:1px solid rgba(28,26,23,0.14);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px">
+    <div>
+      <h2 id="about-h" style="margin:0 0 20px;font-family:'Instrument Serif',serif;font-weight:400;font-size:40px;letter-spacing:-0.01em">About us</h2>
+      <p style="margin:0 0 16px;font-size:17px;line-height:1.65;color:#43403A;text-wrap:pretty">Oakline is a two-person shop. Dana mills and joins; Peter finishes and delivers. We have made furniture on Wealthy Street since 2014, from hardwood bought within 200 miles of the shop.</p>
+      <p style="margin:0;font-size:17px;line-height:1.65;color:#43403A;text-wrap:pretty">Every joint is mechanical — mortise, tenon, dovetail — so a piece can be taken apart and repaired instead of replaced. Send us a photo if something breaks, whenever that happens; repairs on our own work are free for the first ten years.</p>
+    </div>
+    <div>
+      <h3 style="margin:0 0 14px;font-size:13px;letter-spacing:0.16em;text-transform:uppercase;color:#7C736A">Visit or write</h3>
+      <ul style="list-style:none;margin:0;padding:0;display:grid;gap:12px;font-size:17px;line-height:1.5;color:#43403A">
+        <li>418 Wealthy Street SE<br>Grand Rapids, MI 49503</li>
+        <li>Tuesday–Saturday, 10am–6pm</li>
+        <li><a href="tel:+16165550142">(616) 555-0142</a></li>
+        <li><a href="mailto:shop@oaklinefurniture.example">shop@oaklinefurniture.example</a></li>
+      </ul>
+      <p style="margin:22px 0 0;font-size:15px;line-height:1.6;color:#7C736A">Free delivery and assembly within 90 miles. Flat-rate $180 crating anywhere else in the lower 48.</p>
+    </div>
+  </section>
+</main>
+
+<footer style="border-top:1px solid rgba(28,26,23,0.14);background:#EFEAE2">
+  <div style="max-width:1240px;margin:0 auto;padding:30px 28px;display:flex;flex-wrap:wrap;gap:16px 32px;align-items:center;justify-content:space-between;font-size:14px;color:#7C736A">
+    <p style="margin:0">© 2026 Oakline Furniture · Grand Rapids, Michigan</p>
+    <p style="margin:0;display:flex;gap:20px"><a href="#catalogue">Catalogue</a><a href="#about">About us</a><a href="mailto:shop@oaklinefurniture.example">Contact</a></p>
+  </div>
+</footer>
+<script>
+/* Optional filter. Every product is already in the HTML above; this only hides
+   nodes that are already present, so a crawler with JS disabled sees all 12. */
+(function () {
+  var input = document.getElementById('q');
+  var grid = document.querySelector('#catalogue ul[style*="grid-template-columns"]');
+  if (!input || !grid) return;
+  var count = document.querySelector('#catalogue p[aria-live]');
+  var empty = document.querySelector('#catalogue p[style*="dashed"]');
+  input.form.addEventListener('submit', function (e) { e.preventDefault(); });
+  input.addEventListener('input', function () {
+    var q = input.value.trim().toLowerCase(), shown = 0;
+    Array.prototype.forEach.call(grid.children, function (li) {
+      var hay = (li.getAttribute('data-search') || '') + ' ' + li.textContent.toLowerCase();
+      var hit = !q || hay.toLowerCase().indexOf(q) !== -1;
+      li.hidden = !hit;
+      if (hit) shown++;
+    });
+    if (empty) empty.hidden = shown !== 0;
+    if (count) count.textContent = shown === 12 ? 'Showing all 12 pieces'
+      : shown === 1 ? '1 piece matches' : shown + ' pieces match';
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+# Oakline Furniture — Solid-Wood Furniture Catalogue
+
+> Solid-wood furniture made in small batches in Grand Rapids, Michigan. Twelve pieces, built to order.
+
+## Company Details
+- **Brand**: Oakline Furniture
+- **Location**: 418 Wealthy Street SE, Grand Rapids, MI 49503, United States
+- **Phone**: +1 (616) 555-0142
+- **Email**: shop@oaklinefurniture.example
+- **Operating Hours**: Tuesday–Saturday, 10:00 AM – 6:00 PM EST
+- **Price Range**: $340 – $2,480 USD
+- **Craftsmanship Ethos**: Every joint is mechanical (mortise & tenon, dovetailed). All wood is harvested within 200 miles of Grand Rapids, MI. Spot-repairable hardwax oil finishes. 10-year free repair warranty on all pieces.
+
+---
+
+## Catalogue (12 Products)
+
+### 1. Alder Dining Table
+- **Category**: Tables
+- **Price**: $2,480.00 USD
+- **Availability**: In Stock
+- **Material**: Solid white oak
+- **Color**: Natural oak
+- **Dimensions**: 96 × 38 × 30 inches (244 × 96 × 76 cm)
+- **Capacity**: Seats 8 adults
+- **Description**: A 96-inch trestle dining table in solid Michigan white oak, finished with non-toxic natural hardwax oil for durable protection and easy home spot repairs.
+- **URL**: https://oaklinefurniture.example/product/alder-dining-table
+
+### 2. Mill Lounge Chair
+- **Category**: Seating
+- **Price**: $1,140.00 USD
+- **Availability**: In Stock
+- **Material**: Ash frame, wool bouclé cushion
+- **Color**: Oat
+- **Dimensions**: 29 × 32 × 28 inches (74 × 81 × 71 cm)
+- **Capacity**: 1 Person
+- **Description**: Relaxed low ash frame with heavy-duty webbed seat suspension and a removable, washable oat-colored wool bouclé cushion cover.
+- **URL**: https://oaklinefurniture.example/product/mill-lounge-chair
+
+### 3. Kestrel Sideboard
+- **Category**: Storage
+- **Price**: $1,980.00 USD
+- **Availability**: Made to Order (5-week lead time)
+- **Material**: Solid American walnut
+- **Color**: Walnut
+- **Dimensions**: 72 × 18 × 32 inches (183 × 46 × 81 cm)
+- **Capacity**: Fits up to 65-inch television
+- **Description**: Four hand-cut dovetailed drawers and two full-size storage cabinets in solid walnut with soft-close hardware and rear wire management cutouts.
+- **URL**: https://oaklinefurniture.example/product/kestrel-sideboard
+
+### 4. Harbor Bed Frame
+- **Category**: Bedroom & lighting
+- **Price**: $2,150.00 USD
+- **Availability**: In Stock
+- **Material**: Solid Michigan maple
+- **Color**: Pale maple
+- **Dimensions**: Queen (66 × 86 × 42 in) or King
+- **Capacity**: Queen / King mattress
+- **Description**: Slatted maple platform bed featuring a gently angled headboard for sitting upright. Requires no box spring and assembles easily with six bolts. 13-inch under-bed clearance.
+- **URL**: https://oaklinefurniture.example/product/harbor-bed-frame
+
+### 5. Fenwick Bookcase
+- **Category**: Storage
+- **Price**: $1,320.00 USD
+- **Availability**: In Stock
+- **Material**: Solid white oak
+- **Color**: Natural oak
+- **Dimensions**: 36 × 13 × 78 inches (91 × 33 × 198 cm)
+- **Capacity**: 5 fixed shelves
+- **Description**: Five fixed white oak shelves set in an exposed through-tenon timber frame, engineered to hold heavy hardcover books without bowing. Includes safety wall-anchor hardware.
+- **URL**: https://oaklinefurniture.example/product/fenwick-bookcase
+
+### 6. Bramble Dining Chair
+- **Category**: Seating
+- **Price**: $420.00 USD
+- **Availability**: In Stock
+- **Material**: Steam-bent beech, paper cord
+- **Color**: Clay
+- **Dimensions**: 18 × 20 × 32 inches (46 × 51 × 81 cm)
+- **Capacity**: 1 Person (11 lb weight)
+- **Description**: Steam-bent solid beech back rest, hand-woven paper cord seat, and clay-washed matte finish.
+- **URL**: https://oaklinefurniture.example/product/bramble-dining-chair
+
+### 7. Quarry Coffee Table
+- **Category**: Tables
+- **Price**: $980.00 USD
+- **Availability**: In Stock
+- **Material**: White oak and honed limestone slab
+- **Color**: Stone & Oak
+- **Dimensions**: 48 × 26 × 16 inches (122 × 66 × 41 cm)
+- **Description**: Heavy solid oak apron carrying a thick honed limestone tablet, sealed against liquids and family use.
+- **URL**: https://oaklinefurniture.example/product/quarry-coffee-table
+
+### 8. Wren Nightstand
+- **Category**: Bedroom & lighting
+- **Price**: $640.00 USD
+- **Availability**: In Stock
+- **Material**: Solid cherry
+- **Color**: Cherry
+- **Dimensions**: 18 × 16 × 24 inches (46 × 41 × 61 cm)
+- **Capacity**: 1 soft-close drawer + 1 open shelf
+- **Description**: Soft-close solid cherry drawer over an open book shelf with rear cable management notch.
+- **URL**: https://oaklinefurniture.example/product/wren-nightstand
+
+### 9. Sable Desk
+- **Category**: Tables
+- **Price**: $1,560.00 USD
+- **Availability**: In Stock
+- **Material**: Solid American walnut
+- **Color**: Walnut
+- **Dimensions**: 54 × 28 × 30 inches (137 × 71 × 76 cm)
+- **Description**: Solid walnut writing desk with low-profile stationery drawer and concealed rear cable channel.
+- **URL**: https://oaklinefurniture.example/product/sable-desk
+
+### 10. Loom Floor Lamp
+- **Category**: Bedroom & lighting
+- **Price**: $460.00 USD
+- **Availability**: In Stock
+- **Material**: Turned oak column & unbleached linen shade
+- **Color**: Natural
+- **Dimensions**: 58 inches tall (147 cm)
+- **Description**: Hand-turned solid oak floor lamp with natural unbleached linen drum shade and foot cord switch. Takes standard E26 bulb up to 100W.
+- **URL**: https://oaklinefurniture.example/product/loom-floor-lamp
+
+### 11. Ridge Bench
+- **Category**: Seating
+- **Price**: $720.00 USD
+- **Availability**: In Stock
+- **Material**: Solid white oak
+- **Color**: Natural oak
+- **Dimensions**: 60 × 14 × 18 inches (152 × 36 × 46 cm)
+- **Capacity**: Seats 2–3 adults
+- **Description**: Continuous single slab of solid white oak mounted onto sturdy splayed legs for entryway or dining room seating.
+- **URL**: https://oaklinefurniture.example/product/ridge-bench
+
+### 12. Ember Side Table
+- **Category**: Tables
+- **Price**: $340.00 USD
+- **Availability**: In Stock
+- **Material**: Turned cherry
+- **Color**: Cherry
+- **Dimensions**: 16 inches diameter × 24 inches tall (41 × 61 cm)
+- **Description**: Sculptural turned cherry pedestal accent table, lightweight enough to reposition with one hand and armrest height.
+- **URL**: https://oaklinefurniture.example/product/ember-side-table
+
+---
+
+## Shipping & Delivery Terms
+- **Local Michigan Delivery**: Free delivery and inside assembly within 90 miles of Grand Rapids, MI.
+- **Lower 48 Shipping**: Flat-rate $180 wooden crating anywhere else in the continental US.

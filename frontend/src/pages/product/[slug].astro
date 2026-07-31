@@ -1,0 +1,523 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import itemsData from '../../../../backend/items.json';
+
+export async function getStaticPaths() {
+  return itemsData.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+
+// Individual Product Schema.org JSON-LD
+const productSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://oaklinefurniture.example/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": item.category,
+          "item": `https://oaklinefurniture.example/#${item.categorySlug}`
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": item.name,
+          "item": `https://oaklinefurniture.example/product/${item.slug}`
+        }
+      ]
+    },
+    {
+      "@type": "Product",
+      "@id": `https://oaklinefurniture.example/product/${item.slug}#product`,
+      "name": item.name,
+      "category": item.category,
+      "material": item.material,
+      "color": item.color,
+      "description": item.fullDescription,
+      "image": [
+        `https://oaklinefurniture.example${item.image}`
+      ],
+      "brand": {
+        "@type": "Brand",
+        "name": "Oakline"
+      },
+      "manufacturer": {
+        "@type": "Organization",
+        "name": "Oakline Furniture",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Grand Rapids",
+          "addressRegion": "MI",
+          "addressCountry": "US"
+        }
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": item.price.toFixed(2),
+        "priceCurrency": "USD",
+        "availability": item.schemaAvailability,
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@type": "Organization",
+          "name": "Oakline Furniture"
+        }
+      }
+    }
+  ]
+};
+---
+
+<Layout 
+  title={`${item.name} ($${item.price.toLocaleString()}) — Oakline Furniture`}
+  description={`${item.shortDescription} Handcrafted from ${item.material} in Grand Rapids, Michigan.`}
+  jsonLd={productSchema}
+>
+  <main class="product-page-container">
+    
+    <!-- Semantic Breadcrumbs -->
+    <nav aria-label="Breadcrumb" class="breadcrumb-nav">
+      <ol class="breadcrumb-list">
+        <li><a href="/">Catalogue</a></li>
+        <li aria-hidden="true">&rarr;</li>
+        <li><a href={`/#${item.categorySlug}`}>{item.category}</a></li>
+        <li aria-hidden="true">&rarr;</li>
+        <li aria-current="page" class="active">{item.name}</li>
+      </ol>
+    </nav>
+
+    <!-- Semantic Article Detail -->
+    <article class="product-detail-grid">
+      
+      <!-- Media Gallery -->
+      <div class="product-media">
+        <figure class="main-figure">
+          <img 
+            src={item.image} 
+            alt={`${item.name} built from ${item.material}`} 
+            class="detail-image"
+          />
+          <figcaption class="figure-caption">
+            {item.name} in {item.color} — Solid timber craftsmanship by Oakline Furniture.
+          </figcaption>
+        </figure>
+
+        <div class="craftsmanship-callout">
+          <h4 class="callout-title">Handmade Guarantee</h4>
+          <p>Milled, joined, and finished by hand on Wealthy Street, Grand Rapids. Free 10-year repair policy included.</p>
+        </div>
+      </div>
+
+      <!-- Specs & Purchase Overview -->
+      <div class="product-info">
+        <header class="info-header">
+          <span class="category-badge">{item.category}</span>
+          <h1 class="item-title">{item.name}</h1>
+          
+          <div class="price-availability-row">
+            <data value={item.price.toString()} class="item-price">{item.formattedPrice}</data>
+            <span class={`stock-status ${item.inStock ? 'in-stock' : 'pre-order'}`}>
+              {item.availability}
+            </span>
+          </div>
+        </header>
+
+        <section aria-labelledby="desc-h" class="description-section">
+          <h2 id="desc-h" class="sr-only">Product Description</h2>
+          <p class="lead-description">{item.fullDescription}</p>
+        </section>
+
+        <!-- Semantic Definition List for Machine Parsing -->
+        <section aria-labelledby="specs-h" class="specs-section">
+          <h2 id="specs-h" class="specs-title">Technical Specifications</h2>
+          <dl class="specs-grid">
+            <div class="spec-row">
+              <dt>Primary Material</dt>
+              <dd>{item.material}</dd>
+            </div>
+            <div class="spec-row">
+              <dt>Finish &amp; Color</dt>
+              <dd>{item.color}</dd>
+            </div>
+            <div class="spec-row">
+              <dt>Dimensions</dt>
+              <dd>{item.dimensions}</dd>
+            </div>
+            {item.capacity && (
+              <div class="spec-row">
+                <dt>Capacity / Sizing</dt>
+                <dd>{item.capacity}</dd>
+              </div>
+            )}
+            <div class="spec-row">
+              <dt>Origin</dt>
+              <dd>Grand Rapids, Michigan, USA</dd>
+            </div>
+            <div class="spec-row">
+              <dt>Joinery Type</dt>
+              <dd>Mechanical (Mortise, Tenon &amp; Dovetail)</dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- Ordering CTA -->
+        <section aria-labelledby="order-h" class="ordering-box">
+          <h3 id="order-h" class="order-title">How to Order</h3>
+          <p class="order-desc">
+            We take orders online or in person at our Grand Rapids workshop. Every piece is inspectable upon delivery.
+          </p>
+          <div class="cta-actions">
+            <a href="mailto:shop@oaklinefurniture.example?subject=Order%20Inquiry%20-%20" + encodeURIComponent(item.name) class="btn-primary">
+              Inquire / Order Piece &rarr;
+            </a>
+            <a href="tel:+16165550142" class="btn-secondary">
+              Call Workshop
+            </a>
+          </div>
+        </section>
+
+        <!-- Machine Readability Metadata Card -->
+        <div class="ai-metadata-box" aria-label="Machine Readable Specs">
+          <p class="ai-meta-title">🤖 LLM Crawler Metadata</p>
+          <code>
+            ID: {item.id}<br />
+            Schema: Product &gt; Offer<br />
+            Stock: {item.schemaAvailability}<br />
+            Direct API: <a href="/products.json" target="_blank">/products.json</a>
+          </code>
+        </div>
+      </div>
+
+    </article>
+
+    <!-- Back to Catalogue -->
+    <div class="back-link-row">
+      <a href="/#catalogue" class="btn-back">&larr; Return to Full Catalogue</a>
+    </div>
+
+  </main>
+</Layout>
+
+<style>
+  .product-page-container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 32px 28px 96px;
+  }
+
+  .breadcrumb-nav {
+    margin-bottom: 40px;
+  }
+
+  .breadcrumb-list {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--text-subtle);
+  }
+
+  .breadcrumb-list a {
+    color: var(--text-subtle);
+  }
+
+  .breadcrumb-list a:hover {
+    color: var(--text-dark);
+  }
+
+  .breadcrumb-list .active {
+    color: var(--text-dark);
+    font-weight: 600;
+  }
+
+  .product-detail-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 64px;
+    align-items: start;
+  }
+
+  .main-figure {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .detail-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    background: #EAE3D9;
+  }
+
+  .figure-caption {
+    padding: 16px;
+    font-size: 13px;
+    color: var(--text-subtle);
+    border-top: 1px solid var(--border-subtle);
+    background: var(--bg-main);
+  }
+
+  .craftsmanship-callout {
+    margin-top: 24px;
+    padding: 20px 24px;
+    background: rgba(163, 77, 51, 0.05);
+    border: 1px solid rgba(163, 77, 51, 0.18);
+    border-radius: 8px;
+  }
+
+  .callout-title {
+    font-family: var(--font-serif);
+    font-size: 20px;
+    color: var(--accent-terracotta);
+    margin-bottom: 6px;
+  }
+
+  .craftsmanship-callout p {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text-muted);
+  }
+
+  .info-header {
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 28px;
+  }
+
+  .category-badge {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .item-title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(36px, 4vw, 52px);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--text-dark);
+    margin-bottom: 18px;
+  }
+
+  .price-availability-row {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+
+  .item-price {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+
+  .stock-status {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 999px;
+  }
+
+  .stock-status.in-stock {
+    background: rgba(47, 107, 79, 0.1);
+    color: var(--accent-green);
+  }
+
+  .stock-status.pre-order {
+    background: rgba(163, 77, 51, 0.1);
+    color: var(--accent-terracotta);
+  }
+
+  .description-section {
+    margin-bottom: 32px;
+  }
+
+  .lead-description {
+    font-size: 18px;
+    line-height: 1.65;
+    color: var(--text-muted);
+  }
+
+  .specs-section {
+    margin-bottom: 36px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 24px;
+  }
+
+  .specs-title {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 16px;
+    color: var(--text-dark);
+  }
+
+  .specs-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .spec-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 16px;
+    font-size: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--border-subtle);
+  }
+
+  .spec-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .spec-row dt {
+    color: var(--text-subtle);
+    font-weight: 500;
+  }
+
+  .spec-row dd {
+    color: var(--text-dark);
+    font-weight: 500;
+  }
+
+  .ordering-box {
+    background: var(--bg-footer);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .order-title {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .order-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .cta-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--accent-terracotta);
+    color: #FFF;
+    padding: 12px 24px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: background 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    background: var(--text-dark);
+    color: #FFF;
+    text-decoration: none;
+  }
+
+  .btn-secondary {
+    border: 1px solid var(--text-dark);
+    color: var(--text-dark);
+    padding: 12px 24px;
+    border-radius: 999px;
+    font-weight: 500;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary:hover {
+    background: var(--text-dark);
+    color: var(--bg-main);
+    text-decoration: none;
+  }
+
+  .ai-metadata-box {
+    padding: 16px;
+    background: var(--bg-main);
+    border: 1px dashed var(--border-input);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-subtle);
+  }
+
+  .ai-meta-title {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text-dark);
+  }
+
+  .ai-metadata-box code {
+    font-family: monospace;
+    line-height: 1.6;
+    display: block;
+  }
+
+  .back-link-row {
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .btn-back {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-dark);
+  }
+
+  .sr-only {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+  }
+
+  @media (max-width: 900px) {
+    .product-detail-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .spec-row {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+</style>
+</Layout>

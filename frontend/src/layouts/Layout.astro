@@ -1,0 +1,301 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+  jsonLd?: object;
+}
+
+const {
+  title = "Oakline Furniture — Solid-Wood Furniture, Handcrafted in Michigan",
+  description = "Solid-wood furniture made in small batches in Grand Rapids, Michigan. Twelve pieces, built to order with solid oak, walnut, maple, and cherry.",
+  jsonLd
+} = Astro.props;
+
+// Global Store Schema
+const storeSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "FurnitureStore",
+      "@id": "https://oaklinefurniture.example/#store",
+      "name": "Oakline Furniture",
+      "description": "Solid-wood furniture made in small batches in Grand Rapids, Michigan. Twelve pieces, built to order.",
+      "url": "https://oaklinefurniture.example/",
+      "telephone": "+1-616-555-0142",
+      "email": "shop@oaklinefurniture.example",
+      "priceRange": "$340-$2,480",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "418 Wealthy Street SE",
+        "addressLocality": "Grand Rapids",
+        "addressRegion": "MI",
+        "postalCode": "49503",
+        "addressCountry": "US"
+      },
+      "openingHours": "Tu-Sa 10:00-18:00"
+    }
+  ]
+};
+
+const finalJsonLd = jsonLd ? jsonLd : storeSchema;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <meta name="robots" content="index, follow" />
+  
+  <!-- OpenGraph / Social -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={Astro.url.href} />
+  
+  <!-- AI / LLM Scraper Links -->
+  <link rel="alternate" type="text/markdown" title="LLM Plain Text Summary" href="/llms.txt" />
+  <link rel="alternate" type="application/json" title="Structured Products JSON" href="/products.json" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Schema.org JSON-LD for AI and Web Crawlers -->
+  <script type="application/ld+json" set:html={JSON.stringify(finalJsonLd, null, 2)} />
+
+  <style is:global>
+    :root {
+      --bg-main: #F6F2EC;
+      --bg-card: #FFFDFA;
+      --bg-card-hover: #FFFFFF;
+      --bg-footer: #EFEAE2;
+      --text-dark: #1C1A17;
+      --text-muted: #43403A;
+      --text-subtle: #7C736A;
+      --accent-terracotta: #A34D33;
+      --accent-green: #2F6B4F;
+      --border-subtle: rgba(28, 26, 23, 0.14);
+      --border-input: rgba(28, 26, 23, 0.22);
+      --shadow-sm: 0 4px 12px rgba(28, 26, 23, 0.04);
+      --shadow-md: 0 12px 32px rgba(28, 26, 23, 0.08);
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-sans: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-dark);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    a {
+      color: var(--accent-terracotta);
+      text-decoration: none;
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+
+    a:hover {
+      color: var(--text-dark);
+      text-decoration: underline;
+    }
+
+    /* Accessibility Skip Link */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: var(--text-dark);
+      color: var(--bg-main);
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 100;
+      border-radius: 0 0 6px 0;
+    }
+
+    .skip-link:focus {
+      left: 12px;
+      top: 12px;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(246, 242, 236, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .header-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 18px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-dark);
+    }
+
+    .logo-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--accent-terracotta);
+      display: grid;
+      place-items: center;
+      color: var(--bg-main);
+      font-family: var(--font-serif);
+      font-size: 24px;
+      line-height: 1;
+      padding-bottom: 2px;
+      box-shadow: 0 2px 8px rgba(163, 77, 51, 0.25);
+    }
+
+    .logo-text {
+      font-family: var(--font-serif);
+      font-size: 28px;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-pill {
+      border: 1px solid var(--text-dark);
+      border-radius: 999px;
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-dark);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-pill:hover {
+      background: var(--text-dark);
+      color: var(--bg-main);
+      text-decoration: none;
+    }
+
+    .btn-ai-pill {
+      border: 1px solid rgba(163, 77, 51, 0.4);
+      background: rgba(163, 77, 51, 0.06);
+      color: var(--accent-terracotta);
+      font-size: 13px;
+    }
+
+    .btn-ai-pill:hover {
+      background: var(--accent-terracotta);
+      color: var(--bg-main);
+      text-decoration: none;
+    }
+
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      background: var(--bg-footer);
+      margin-top: 96px;
+    }
+
+    .footer-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 40px 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px 40px;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      color: var(--text-subtle);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .header-inner {
+        padding: 14px 20px;
+      }
+      .footer-inner {
+        padding: 30px 20px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#catalogue" class="skip-link">Skip to product catalogue</a>
+
+  <header>
+    <div class="header-inner">
+      <a href="/" aria-label="Oakline Furniture — home" class="logo-group">
+        <span aria-hidden="true" class="logo-badge">O</span>
+        <span class="logo-text">Oakline</span>
+      </a>
+
+      <nav aria-label="Main navigation" class="nav-actions">
+        <a href="/#catalogue" class="btn-pill">Catalogue</a>
+        <a href="/#about" class="btn-pill">About</a>
+        <a href="/llms.txt" target="_blank" rel="noopener" class="btn-pill btn-ai-pill" title="AI/LLM readable text format">🤖 LLM Text</a>
+      </nav>
+    </div>
+  </header>
+
+  <slot />
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <p>© 2026 Oakline Furniture · 418 Wealthy Street SE, Grand Rapids, MI 49503</p>
+        <p style="margin-top:4px; font-size:13px; color:#7C736A;">Pre-rendered HTML static pages optimized for web crawlers &amp; AI agents.</p>
+      </div>
+      <div class="footer-links">
+        <a href="/#catalogue">Catalogue</a>
+        <a href="/#about">About Us</a>
+        <a href="/products.json" target="_blank">JSON Data</a>
+        <a href="/llms.txt" target="_blank">llms.txt</a>
+        <a href="mailto:shop@oaklinefurniture.example">Contact</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
