@@ -1,0 +1,25 @@
+{
+  "name": "oakline-furniture-monorepo",
+  "version": "1.0.0",
+  "description": "Solid-wood furniture ecommerce application made in Grand Rapids, Michigan. Optimized for AI crawlers and modern production deployments.",
+  "private": true,
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "preview": "cd frontend && npm run preview",
+    "serve-static": "python -m http.server 8080 --directory static",
+    "serve-dist": "python -m http.server 8080 --directory frontend/dist"
+  },
+  "keywords": [
+    "astro",
+    "furniture",
+    "ecommerce",
+    "ai-crawlable",
+    "llms"
+  ],
+  "author": "Oakline Furniture",
+  "license": "MIT"
+}
