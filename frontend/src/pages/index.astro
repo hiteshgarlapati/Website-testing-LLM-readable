@@ -1,6 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import itemsData from '../../../backend/items.json';
+import { getAllItems } from '../lib/db.js';
+
+const itemsData = await getAllItems();
+
+// Local paths need the site domain prepended; Cloudinary URLs are already absolute
+const absoluteImage = (img) =>
+  img.startsWith('http') ? img : `https://oaklinefurniture.example${img}`;
 
 // Build Schema.org ItemList for machine readability
 const itemListSchema = {
@@ -40,7 +46,7 @@ const itemListSchema = {
           "material": item.material,
           "color": item.color,
           "description": item.shortDescription,
-          "image": `https://oaklinefurniture.example${item.image}`,
+          "image": absoluteImage(item.image),
           "brand": {
             "@type": "Brand",
             "name": "Oakline"
