@@ -1,19 +1,10 @@
 import { defineConfig } from 'astro/config';
-import { fileURLToPath } from 'node:url';
-import path from 'node:path';
-
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const backendPath = path.resolve(__dirname, '../backend');
+import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
-  output: 'static',
+  // Server-rendered so admin edits reflect on the live site instantly
+  output: 'server',
+  adapter: vercel(),
   site: 'https://oaklinefurniture.example',
-  vite: {
-    server: {
-      fs: {
-        allow: [__dirname, backendPath]
-      }
-    }
-  }
 });

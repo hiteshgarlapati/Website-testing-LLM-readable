@@ -1,0 +1,329 @@
+---
+export const prerender = false;
+
+import Layout from '../layouts/Layout.astro';
+import { getAllItems } from '../lib/db.js';
+import { requireAdmin } from '../lib/auth.js';
+
+const authFail = requireAdmin(Astro.request);
+if (authFail) return authFail;
+
+const itemsData = await getAllItems();
+
+const savedId = Astro.url.searchParams.get('saved');
+const savedItem = savedId ? itemsData.find((i) => i.id === savedId) : null;
+const savedAll = Astro.url.searchParams.get('savedAll');
+const errorMessage = Astro.url.searchParams.get('error');
+const errorItem = Astro.url.searchParams.get('item');
+---
+
+<Layout title="Admin — Oakline Furniture" description="Catalogue admin panel.">
+  <main class="admin-container">
+    <header class="admin-header">
+      <div>
+        <p class="subtitle">Admin panel</p>
+        <h1 class="admin-title">Edit catalogue</h1>
+      </div>
+      <p class="admin-hint">
+        Change a name or upload a new picture, then hit <strong>Save</strong> on that card.
+        Changes are saved to MongoDB and show up on the
+        <a href="/">live site</a> immediately.
+      </p>
+    </header>
+
+    {savedItem && (
+      <p class="save-notice" role="status">✓ Saved changes to <strong>{savedItem.name}</strong>.</p>
+    )}
+
+    {savedAll && (
+      <p class="save-notice" role="status">✓ Saved all {savedAll} items.</p>
+    )}
+
+    {errorMessage && (
+      <p class="error-notice" role="alert">
+        ✕ Could not save{errorItem ? <Fragment> <strong>{errorItem}</strong></Fragment> : null}: {errorMessage}
+      </p>
+    )}
+
+    <form method="POST" action="/api/update-item" enctype="multipart/form-data">
+      <div class="save-all-bar">
+        <p class="save-all-hint">Edit as many items as you like, then save everything in one go.</p>
+        <button type="submit" class="save-all-btn">Save all</button>
+      </div>
+
+      <ul class="admin-grid">
+        {itemsData.map((item) => (
+          <li>
+            <div class="admin-card">
+              <div class="admin-image">
+                <img src={item.image} alt={item.name} loading="lazy" />
+              </div>
+
+              <div class="admin-fields">
+                <label class="field-label" for={`name-${item.id}`}>Name</label>
+                <input
+                  id={`name-${item.id}`}
+                  class="field-input"
+                  type="text"
+                  name={`name-${item.id}`}
+                  value={item.name}
+                  required
+                />
+
+                <label class="field-label" for={`image-${item.id}`}>Replace picture</label>
+                <input
+                  id={`image-${item.id}`}
+                  class="field-file"
+                  type="file"
+                  name={`image-${item.id}`}
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                />
+
+                <div class="admin-card-footer">
+                  <span class="item-meta">{item.category} · {item.formattedPrice}</span>
+                  <button type="submit" name="only" value={item.id} class="save-btn">Save</button>
+                </div>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </form>
+  </main>
+</Layout>
+
+<style>
+  .admin-container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 28px 96px;
+  }
+
+  .admin-header {
+    padding: 56px 0 32px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 32px;
+  }
+
+  .subtitle {
+    margin-bottom: 12px;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    font-weight: 500;
+  }
+
+  .admin-title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(36px, 4.5vw, 56px);
+    line-height: 1.05;
+    color: var(--text-dark);
+  }
+
+  .admin-hint {
+    max-width: 44ch;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+
+  .admin-hint code {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 13px;
+  }
+
+  .save-notice {
+    margin-bottom: 28px;
+    padding: 12px 18px;
+    background: rgba(47, 107, 79, 0.08);
+    border: 1px solid rgba(47, 107, 79, 0.25);
+    border-radius: 8px;
+    color: var(--accent-green);
+    font-size: 15px;
+  }
+
+  .error-notice {
+    margin-bottom: 28px;
+    padding: 12px 18px;
+    background: rgba(163, 77, 51, 0.08);
+    border: 1px solid rgba(163, 77, 51, 0.3);
+    border-radius: 8px;
+    color: var(--accent-terracotta);
+    font-size: 15px;
+  }
+
+  .save-all-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+    padding: 14px 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+  }
+
+  .save-all-hint {
+    font-size: 14px;
+    color: var(--text-subtle);
+  }
+
+  .save-all-btn {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--bg-main);
+    background: var(--accent-terracotta);
+    border: 1px solid var(--accent-terracotta);
+    border-radius: 999px;
+    padding: 10px 32px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .save-all-btn:hover {
+    background: var(--text-dark);
+    border-color: var(--text-dark);
+  }
+
+  .admin-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+  }
+
+  .admin-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .admin-image {
+    aspect-ratio: 4/3;
+    background: #EAE3D9;
+  }
+
+  .admin-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .admin-fields {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .field-label {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--text-subtle);
+    margin-top: 10px;
+  }
+
+  .field-label:first-child {
+    margin-top: 0;
+  }
+
+  .field-input {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    color: var(--text-dark);
+    background: var(--bg-main);
+    border: 1px solid var(--border-input);
+    border-radius: 6px;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .field-input:focus {
+    border-color: var(--accent-terracotta);
+    box-shadow: 0 0 0 3px rgba(163, 77, 51, 0.12);
+  }
+
+  .field-file {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .admin-card-footer {
+    margin-top: auto;
+    padding-top: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .item-meta {
+    font-size: 13px;
+    color: var(--text-subtle);
+  }
+
+  .save-btn {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--bg-main);
+    background: var(--text-dark);
+    border: 1px solid var(--text-dark);
+    border-radius: 999px;
+    padding: 9px 26px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .save-btn:hover {
+    background: var(--accent-terracotta);
+    border-color: var(--accent-terracotta);
+  }
+
+  @media (max-width: 1024px) {
+    .admin-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .admin-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script is:inline>
+  // Live-preview a newly chosen picture before saving
+  document.querySelectorAll('.admin-card input[type="file"]').forEach((input) => {
+    input.addEventListener('change', () => {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const img = input.closest('.admin-card').querySelector('.admin-image img');
+      if (img) img.src = URL.createObjectURL(file);
+    });
+  });
+</script>

@@ -10,6 +10,9 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.1.6"
+    "@astrojs/vercel": "^11.0.4",
+    "astro": "^7.1.6",
+    "cloudinary": "^2.10.0",
+    "mongodb": "^7.5.0"
   }
 }

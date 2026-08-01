@@ -23,3 +23,7 @@ pnpm-debug.log*
 # OS metadata
 .DS_Store
 Thumbs.db
+
+# Vercel build output
+.vercel/
+frontend/.vercel/

@@ -1,7 +1,8 @@
-import itemsData from '../data/items.json';
+import { getAllItems } from '../lib/db.js';
 
 export async function GET() {
-  return new Response(JSON.stringify(itemsData, null, 2), {
+  const items = await getAllItems();
+  return new Response(JSON.stringify(items, null, 2), {
     headers: { 'content-type': 'application/json; charset=utf-8' }
   });
 }
