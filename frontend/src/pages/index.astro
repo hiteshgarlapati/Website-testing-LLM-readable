@@ -1,12 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getAllItems } from '../lib/db.js';
-
-const itemsData = await getAllItems();
-
-// Local paths need the site domain prepended; Cloudinary URLs are already absolute
-const absoluteImage = (img) =>
-  img.startsWith('http') ? img : `https://oaklinefurniture.example${img}`;
+import itemsData from '../data/items.json';
 
 // Define the categories with their subtitles exactly as in Mockup (2)
 const categories = [
@@ -59,7 +53,7 @@ const catalogueSchema = {
           "category": item.category,
           "description": item.description,
           "url": `https://oaklinefurniture.example/product/${item.slug}`,
-          "image": absoluteImage(item.image),
+          "image": `https://oaklinefurniture.example${item.image}`,
           "material": item.specs[0] || "Solid wood",
           "brand": { "@type": "Brand", "name": "Oakline" },
           "offers": {

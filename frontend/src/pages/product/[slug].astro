@@ -1,20 +1,15 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getAllItems, getItemBySlug } from '../../lib/db.js';
+import itemsData from '../../data/items.json';
 
 export async function getStaticPaths() {
-  const items = await getAllItems();
-  return items.map((item) => ({
+  return itemsData.map((item) => ({
     params: { slug: item.slug },
+    props: { item },
   }));
 }
 
-// Fetch fresh from MongoDB on each render (dev) / at build time (static build)
-const item = await getItemBySlug(Astro.params.slug);
-
-// Local paths need the site domain prepended; Cloudinary URLs are already absolute
-const absoluteImage = (img) =>
-  img.startsWith('http') ? img : `https://oaklinefurniture.example${img}`;
+const { item } = Astro.props;
 
 // Individual Product Schema.org JSON-LD for AI crawlers & LLM agents
 const productSchema = {
@@ -51,7 +46,7 @@ const productSchema = {
       "material": item.specs[0] || "Solid wood",
       "description": item.description,
       "image": [
-        absoluteImage(item.image)
+        `https://oaklinefurniture.example${item.image}`
       ],
       "brand": {
         "@type": "Brand",
