@@ -16,7 +16,7 @@ const item = await getItemBySlug(Astro.params.slug);
 const absoluteImage = (img) =>
   img.startsWith('http') ? img : `https://oaklinefurniture.example${img}`;
 
-// Individual Product Schema.org JSON-LD
+// Individual Product Schema.org JSON-LD for AI crawlers & LLM agents
 const productSchema = {
   "@context": "https://schema.org",
   "@graph": [
@@ -33,7 +33,7 @@ const productSchema = {
           "@type": "ListItem",
           "position": 2,
           "name": item.category,
-          "item": `https://oaklinefurniture.example/#${item.categorySlug}`
+          "item": `https://oaklinefurniture.example/#${item.categoryId}`
         },
         {
           "@type": "ListItem",
@@ -48,9 +48,8 @@ const productSchema = {
       "@id": `https://oaklinefurniture.example/product/${item.slug}#product`,
       "name": item.name,
       "category": item.category,
-      "material": item.material,
-      "color": item.color,
-      "description": item.fullDescription,
+      "material": item.specs[0] || "Solid wood",
+      "description": item.description,
       "image": [
         absoluteImage(item.image)
       ],
@@ -61,17 +60,13 @@ const productSchema = {
       "manufacturer": {
         "@type": "Organization",
         "name": "Oakline Furniture",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Grand Rapids",
-          "addressRegion": "MI",
-          "addressCountry": "US"
-        }
+        "address": "Grand Rapids, Michigan"
       },
       "offers": {
         "@type": "Offer",
-        "price": item.price.toFixed(2),
+        "url": `https://oaklinefurniture.example/product/${item.slug}`,
         "priceCurrency": "USD",
+        "price": item.price,
         "availability": item.schemaAvailability,
         "itemCondition": "https://schema.org/NewCondition",
         "seller": {
@@ -82,447 +77,403 @@ const productSchema = {
     }
   ]
 };
+
+// Find 2 related items in the same category (or fallback to others)
+const relatedItems = itemsData
+  .filter(p => p.categoryId === item.categoryId && p.id !== item.id)
+  .slice(0, 2);
 ---
 
-<Layout 
-  title={`${item.name} ($${item.price.toLocaleString()}) — Oakline Furniture`}
-  description={`${item.shortDescription} Handcrafted from ${item.material} in Grand Rapids, Michigan.`}
-  jsonLd={productSchema}
->
-  <main class="product-page-container">
-    
-    <!-- Semantic Breadcrumbs -->
+<Layout title={`${item.name} | Oakline Furniture`} description={item.description} jsonLd={productSchema}>
+  <main class="page-container" id="top">
+    <!-- Breadcrumb Navigation -->
     <nav aria-label="Breadcrumb" class="breadcrumb-nav">
-      <ol class="breadcrumb-list">
+      <ol>
         <li><a href="/">Catalogue</a></li>
-        <li aria-hidden="true">&rarr;</li>
-        <li><a href={`/#${item.categorySlug}`}>{item.category}</a></li>
-        <li aria-hidden="true">&rarr;</li>
-        <li aria-current="page" class="active">{item.name}</li>
+        <li><span aria-hidden="true" class="divider">/</span></li>
+        <li><a href={`/#${item.categoryId}`}>{item.category}</a></li>
+        <li><span aria-hidden="true" class="divider">/</span></li>
+        <li aria-current="page"><strong>{item.name}</strong></li>
       </ol>
+      <div class="ai-links">
+        <a href="/products.json" target="_blank" class="badge-link">⚡ AI JSON API</a>
+      </div>
     </nav>
 
-    <!-- Semantic Article Detail -->
-    <article class="product-detail-grid">
-      
-      <!-- Media Gallery -->
-      <div class="product-media">
-        <figure class="main-figure">
-          <img 
-            src={item.image} 
-            alt={`${item.name} built from ${item.material}`} 
-            class="detail-image"
-          />
-          <figcaption class="figure-caption">
-            {item.name} in {item.color} — Solid timber craftsmanship by Oakline Furniture.
-          </figcaption>
-        </figure>
-
-        <div class="craftsmanship-callout">
-          <h4 class="callout-title">Handmade Guarantee</h4>
-          <p>Milled, joined, and finished by hand on Wealthy Street, Grand Rapids. Free 10-year repair policy included.</p>
+    <!-- Main Product Layout -->
+    <section aria-labelledby="product-title" class="product-layout">
+      <!-- Product Image Display -->
+      <div class="product-visuals">
+        <div class="main-image-card">
+          <img src={item.image} alt={item.name} />
+        </div>
+        <div class="craftsmanship-box">
+          <h4>Grand Rapids Craftsmanship</h4>
+          <p>Every piece is joined mechanically with tenons and dovetails from locally milled hardwood within 200 miles of Wealthy Street. Repairs are covered free for ten years.</p>
         </div>
       </div>
 
-      <!-- Specs & Purchase Overview -->
-      <div class="product-info">
-        <header class="info-header">
-          <span class="category-badge">{item.category}</span>
-          <h1 class="item-title">{item.name}</h1>
-          
-          <div class="price-availability-row">
-            <data value={item.price.toString()} class="item-price">{item.formattedPrice}</data>
-            <span class={`stock-status ${item.inStock ? 'in-stock' : 'pre-order'}`}>
-              {item.availability}
-            </span>
-          </div>
-        </header>
+      <!-- Product Specifications & Actions -->
+      <div class="product-details">
+        <span class:list={['status-badge', { 'stock-status': item.availability.includes('In stock'), 'order-status': !item.availability.includes('In stock') }]}>
+          {item.availability}
+        </span>
+        <h1 id="product-title" class="title">{item.name}</h1>
+        <p class="price-display">{item.formattedPrice}</p>
 
-        <section aria-labelledby="desc-h" class="description-section">
-          <h2 id="desc-h" class="sr-only">Product Description</h2>
-          <p class="lead-description">{item.fullDescription}</p>
-        </section>
+        <div class="description-block">
+          <h2>Overview</h2>
+          <p>{item.description}</p>
+        </div>
 
-        <!-- Semantic Definition List for Machine Parsing -->
-        <section aria-labelledby="specs-h" class="specs-section">
-          <h2 id="specs-h" class="specs-title">Technical Specifications</h2>
-          <dl class="specs-grid">
-            <div class="spec-row">
-              <dt>Primary Material</dt>
-              <dd>{item.material}</dd>
-            </div>
-            <div class="spec-row">
-              <dt>Finish &amp; Color</dt>
-              <dd>{item.color}</dd>
-            </div>
-            <div class="spec-row">
-              <dt>Dimensions</dt>
-              <dd>{item.dimensions}</dd>
-            </div>
-            {item.capacity && (
-              <div class="spec-row">
-                <dt>Capacity / Sizing</dt>
-                <dd>{item.capacity}</dd>
-              </div>
-            )}
-            <div class="spec-row">
-              <dt>Origin</dt>
-              <dd>Grand Rapids, Michigan, USA</dd>
-            </div>
-            <div class="spec-row">
-              <dt>Joinery Type</dt>
-              <dd>Mechanical (Mortise, Tenon &amp; Dovetail)</dd>
-            </div>
-          </dl>
-        </section>
+        <!-- Specifications & Dimensions -->
+        <div class="specs-block">
+          <h2>Specifications & Highlights</h2>
+          <ul class="specs-list">
+            {item.specs.map(spec => (
+              <li>
+                <span class="checkmark">✔</span>
+                <span>{spec}</span>
+              </li>
+            ))}
+            <li><span class="checkmark">✔</span> <span>Handmade in Grand Rapids, MI</span></li>
+            <li><span class="checkmark">✔</span> <span>10-Year Repair Warranty included</span></li>
+          </ul>
+        </div>
 
-        <!-- Ordering CTA -->
-        <section aria-labelledby="order-h" class="ordering-box">
-          <h3 id="order-h" class="order-title">How to Order</h3>
-          <p class="order-desc">
-            We take orders online or in person at our Grand Rapids workshop. Every piece is inspectable upon delivery.
-          </p>
-          <div class="cta-actions">
-            <a href="mailto:shop@oaklinefurniture.example?subject=Order%20Inquiry%20-%20" + encodeURIComponent(item.name) class="btn-primary">
-              Inquire / Order Piece &rarr;
+        <!-- Order / Inquiry Call to Action -->
+        <div class="action-card">
+          <h3>Order & Commission Inquiry</h3>
+          <p>Since we build in small custom batches, orders are placed directly with Dana and Peter via phone or email.</p>
+          <div class="action-buttons">
+            <a href={`mailto:shop@oaklinefurniture.example?subject=Inquiry: ${item.name} (${item.formattedPrice})`} class="btn-primary">
+              ✉ Email Shop to Order
             </a>
             <a href="tel:+16165550142" class="btn-secondary">
-              Call Workshop
+              📞 (616) 555-0142
             </a>
           </div>
-        </section>
-
-        <!-- Machine Readability Metadata Card -->
-        <div class="ai-metadata-box" aria-label="Machine Readable Specs">
-          <p class="ai-meta-title">🤖 LLM Crawler Metadata</p>
-          <code>
-            ID: {item.id}<br />
-            Schema: Product &gt; Offer<br />
-            Stock: {item.schemaAvailability}<br />
-            Direct API: <a href="/products.json" target="_blank">/products.json</a>
-          </code>
+          <p class="delivery-info">Free delivery and setup within 90 miles of Grand Rapids ($180 flat-rate crating across lower 48 states).</p>
         </div>
       </div>
+    </section>
 
-    </article>
-
-    <!-- Back to Catalogue -->
-    <div class="back-link-row">
-      <a href="/#catalogue" class="btn-back">&larr; Return to Full Catalogue</a>
-    </div>
-
+    <!-- Related Pieces -->
+    {relatedItems.length > 0 && (
+      <section aria-labelledby="related-title" class="related-section">
+        <div class="related-header">
+          <h2 id="related-title">More in {item.category}</h2>
+          <a href={`/#${item.categoryId}`} class="view-all">View all {item.category.toLowerCase()} →</a>
+        </div>
+        <ul class="related-grid">
+          {relatedItems.map(rel => (
+            <li>
+              <article class="mini-card">
+                <a href={`/product/${rel.slug}`} class="mini-img">
+                  <img src={rel.image} alt={rel.name} loading="lazy" />
+                </a>
+                <div class="mini-info">
+                  <h4><a href={`/product/${rel.slug}`}>{rel.name}</a></h4>
+                  <p class="mini-price">{rel.formattedPrice} · <span class="mini-status">{rel.availability}</span></p>
+                </div>
+              </article>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
   </main>
 </Layout>
 
 <style>
-  .product-page-container {
+  .page-container {
     max-width: 1240px;
     margin: 0 auto;
-    padding: 32px 28px 96px;
+    padding: 0 28px;
   }
 
+  /* Breadcrumbs */
   .breadcrumb-nav {
-    margin-bottom: 40px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
   }
-
-  .breadcrumb-list {
+  .breadcrumb-nav ol {
     list-style: none;
     display: flex;
     align-items: center;
-    gap: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
     font-size: 14px;
-    color: var(--text-subtle);
+    color: var(--text-muted);
+  }
+  .divider {
+    color: #A0968C;
+  }
+  .badge-link {
+    font-size: 13px;
+    background: rgba(163, 77, 51, 0.08);
+    border: 1px solid rgba(163, 77, 51, 0.4);
+    color: var(--accent-terracotta);
+    padding: 6px 12px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .badge-link:hover {
+    background: var(--accent-terracotta);
+    color: #fff;
   }
 
-  .breadcrumb-list a {
-    color: var(--text-subtle);
-  }
-
-  .breadcrumb-list a:hover {
-    color: var(--text-dark);
-  }
-
-  .breadcrumb-list .active {
-    color: var(--text-dark);
-    font-weight: 600;
-  }
-
-  .product-detail-grid {
+  /* Product Layout */
+  .product-layout {
+    padding: 48px 0 64px;
     display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-    gap: 64px;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: 56px;
     align-items: start;
   }
-
-  .main-figure {
-    background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
-    border-radius: 12px;
+  .main-image-card {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: #EAE1D6;
+    border-radius: 8px;
     overflow: hidden;
     box-shadow: var(--shadow-sm);
   }
-
-  .detail-image {
+  .main-image-card img {
     width: 100%;
-    height: auto;
-    display: block;
-    aspect-ratio: 4/3;
+    height: 100%;
     object-fit: cover;
-    background: #EAE3D9;
   }
-
-  .figure-caption {
-    padding: 16px;
-    font-size: 13px;
-    color: var(--text-subtle);
-    border-top: 1px solid var(--border-subtle);
-    background: var(--bg-main);
-  }
-
-  .craftsmanship-callout {
+  .craftsmanship-box {
     margin-top: 24px;
-    padding: 20px 24px;
-    background: rgba(163, 77, 51, 0.05);
-    border: 1px solid rgba(163, 77, 51, 0.18);
-    border-radius: 8px;
+    padding: 20px;
+    background: #EFEAE2;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
   }
-
-  .callout-title {
+  .craftsmanship-box h4 {
     font-family: var(--font-serif);
     font-size: 20px;
-    color: var(--accent-terracotta);
-    margin-bottom: 6px;
+    font-weight: 400;
+    margin-bottom: 8px;
   }
-
-  .craftsmanship-callout p {
+  .craftsmanship-box p {
     font-size: 14px;
-    line-height: 1.55;
+    line-height: 1.5;
     color: var(--text-muted);
   }
 
-  .info-header {
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--border-subtle);
-    margin-bottom: 28px;
-  }
-
-  .category-badge {
-    font-size: 12px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-subtle);
+  /* Details Column */
+  .status-badge {
+    display: inline-block;
+    font-size: 13px;
     font-weight: 600;
-    margin-bottom: 8px;
-    display: block;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 12px;
   }
-
-  .item-title {
+  .stock-status {
+    background: rgba(47, 107, 79, 0.12);
+    color: var(--accent-green);
+  }
+  .order-status {
+    background: rgba(163, 77, 51, 0.12);
+    color: var(--accent-terracotta);
+  }
+  .title {
     font-family: var(--font-serif);
     font-weight: 400;
     font-size: clamp(36px, 4vw, 52px);
-    line-height: 1.05;
-    letter-spacing: -0.01em;
+    line-height: 1.1;
     color: var(--text-dark);
-    margin-bottom: 18px;
+    margin-bottom: 8px;
   }
-
-  .price-availability-row {
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-  }
-
-  .item-price {
-    font-size: 32px;
-    font-weight: 700;
+  .price-display {
+    font-size: 26px;
+    font-weight: 600;
     color: var(--text-dark);
+    margin-bottom: 28px;
   }
 
-  .stock-status {
-    font-size: 14px;
-    font-weight: 500;
-    padding: 6px 14px;
-    border-radius: 999px;
+  .description-block, .specs-block {
+    margin-bottom: 36px;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 20px;
   }
-
-  .stock-status.in-stock {
-    background: rgba(47, 107, 79, 0.1);
-    color: var(--accent-green);
+  .description-block h2, .specs-block h2 {
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    margin-bottom: 12px;
   }
-
-  .stock-status.pre-order {
-    background: rgba(163, 77, 51, 0.1);
-    color: var(--accent-terracotta);
-  }
-
-  .description-section {
-    margin-bottom: 32px;
-  }
-
-  .lead-description {
-    font-size: 18px;
-    line-height: 1.65;
+  .description-block p {
+    font-size: 17px;
+    line-height: 1.6;
     color: var(--text-muted);
   }
 
-  .specs-section {
-    margin-bottom: 36px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
-    border-radius: 8px;
-    padding: 24px;
+  .specs-list {
+    list-style: none;
+    display: grid;
+    gap: 10px;
+    font-size: 16px;
+    color: var(--text-dark);
+  }
+  .specs-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .checkmark {
+    color: var(--accent-terracotta);
+    font-size: 14px;
   }
 
-  .specs-title {
+  /* Action Card */
+  .action-card {
+    background: #EFEAE2;
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 28px;
+    margin-top: 36px;
+  }
+  .action-card h3 {
     font-family: var(--font-serif);
     font-size: 24px;
     font-weight: 400;
-    margin-bottom: 16px;
-    color: var(--text-dark);
-  }
-
-  .specs-grid {
-    display: grid;
-    gap: 12px;
-  }
-
-  .spec-row {
-    display: grid;
-    grid-template-columns: 160px 1fr;
-    gap: 16px;
-    font-size: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px dashed var(--border-subtle);
-  }
-
-  .spec-row:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
-
-  .spec-row dt {
-    color: var(--text-subtle);
-    font-weight: 500;
-  }
-
-  .spec-row dd {
-    color: var(--text-dark);
-    font-weight: 500;
-  }
-
-  .ordering-box {
-    background: var(--bg-footer);
-    border: 1px solid var(--border-subtle);
-    border-radius: 8px;
-    padding: 24px;
-    margin-bottom: 24px;
-  }
-
-  .order-title {
-    font-family: var(--font-serif);
-    font-size: 22px;
     margin-bottom: 8px;
   }
-
-  .order-desc {
+  .action-card p {
     font-size: 14px;
+    line-height: 1.5;
     color: var(--text-muted);
     margin-bottom: 20px;
-    line-height: 1.5;
   }
-
-  .cta-actions {
+  .action-buttons {
     display: flex;
-    gap: 12px;
     flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 16px;
   }
-
-  .btn-primary {
-    background: var(--accent-terracotta);
-    color: #FFF;
-    padding: 12px 24px;
+  .btn-primary, .btn-secondary {
+    flex: 1;
+    min-width: 200px;
+    height: 48px;
     border-radius: 999px;
-    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 15px;
-    text-decoration: none;
-    transition: background 0.2s ease;
-  }
-
-  .btn-primary:hover {
-    background: var(--text-dark);
-    color: #FFF;
-    text-decoration: none;
-  }
-
-  .btn-secondary {
-    border: 1px solid var(--text-dark);
-    color: var(--text-dark);
-    padding: 12px 24px;
-    border-radius: 999px;
     font-weight: 500;
-    font-size: 15px;
     text-decoration: none;
     transition: all 0.2s ease;
   }
-
-  .btn-secondary:hover {
+  .btn-primary {
     background: var(--text-dark);
-    color: var(--bg-main);
-    text-decoration: none;
+    color: #F6F2EC;
+    border: 1px solid var(--text-dark);
   }
-
-  .ai-metadata-box {
-    padding: 16px;
-    background: var(--bg-main);
-    border: 1px dashed var(--border-input);
-    border-radius: 6px;
-    font-size: 12px;
-    color: var(--text-subtle);
+  .btn-primary:hover {
+    background: var(--accent-terracotta);
+    border-color: var(--accent-terracotta);
+    color: #fff;
   }
-
-  .ai-meta-title {
-    font-weight: 600;
-    margin-bottom: 6px;
+  .btn-secondary {
+    background: #FFFDFA;
     color: var(--text-dark);
+    border: 1px solid var(--border-input);
+  }
+  .btn-secondary:hover {
+    border-color: var(--text-dark);
+    background: var(--text-dark);
+    color: #F6F2EC;
+  }
+  .delivery-info {
+    font-size: 13px !important;
+    color: var(--text-subtle) !important;
+    margin-bottom: 0 !important;
   }
 
-  .ai-metadata-box code {
-    font-family: monospace;
-    line-height: 1.6;
-    display: block;
-  }
-
-  .back-link-row {
-    margin-top: 64px;
-    padding-top: 32px;
+  /* Related Section */
+  .related-section {
+    padding: 48px 0;
     border-top: 1px solid var(--border-subtle);
+    margin-bottom: 40px;
   }
-
-  .btn-back {
-    font-size: 16px;
+  .related-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .related-header h2 {
+    font-family: var(--font-serif);
+    font-size: 30px;
+    font-weight: 400;
+  }
+  .view-all {
+    font-size: 15px;
     font-weight: 500;
+  }
+  .related-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 36px;
+  }
+  .mini-card {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .mini-img {
+    width: 120px;
+    aspect-ratio: 4/3;
+    background: #EAE1D6;
+    border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .mini-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  .mini-img:hover img {
+    transform: scale(1.05);
+  }
+  .mini-info h4 {
+    font-family: var(--font-serif);
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
+  .mini-info h4 a {
     color: var(--text-dark);
   }
-
-  .sr-only {
-    position: absolute;
-    left: -9999px;
-    width: 1px;
-    height: 1px;
+  .mini-price {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .mini-status {
+    color: var(--accent-terracotta);
   }
 
-  @media (max-width: 900px) {
-    .product-detail-grid {
+  @media (max-width: 860px) {
+    .product-layout {
       grid-template-columns: 1fr;
-      gap: 40px;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .spec-row {
-      grid-template-columns: 1fr;
-      gap: 4px;
+      gap: 36px;
     }
   }
 </style>
-</Layout>

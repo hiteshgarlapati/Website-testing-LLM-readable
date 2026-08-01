@@ -23,6 +23,10 @@ const existing = await col.countDocuments();
 if (existing > 0 && !force) {
   console.log(`Collection already has ${existing} items — skipping seed. Use --force to overwrite.`);
 } else {
+  if (force) {
+    const removed = await col.deleteMany({});
+    console.log(`Removed ${removed.deletedCount} existing items.`);
+  }
   for (const [index, item] of items.entries()) {
     await col.replaceOne(
       { id: item.id },
