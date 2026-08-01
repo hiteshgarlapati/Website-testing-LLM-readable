@@ -6,6 +6,11 @@
   "workspaces": [
     "frontend"
   ],
+  "sideEffects": [
+    "**/*.css",
+    "**/*.scss",
+    "**/*.astro"
+  ],
   "scripts": {
     "dev": "cd frontend && npm run dev",
     "build": "cd frontend && npm run build",
@@ -18,7 +23,8 @@
     "furniture",
     "ecommerce",
     "ai-crawlable",
-    "llms"
+    "llms",
+    "css"
   ],
   "author": "Oakline Furniture",
   "license": "MIT"
