@@ -1,0 +1,128 @@
+---
+export interface Props {
+  item: {
+    id: string;
+    name: string;
+    slug: string;
+    category: string;
+    categoryId: string;
+    price: number;
+    formattedPrice: string;
+    availability: string;
+    description: string;
+    specs: string[];
+    image: string;
+  };
+}
+
+const { item } = Astro.props;
+---
+
+<article class="product-card">
+  <a href={`/product/${item.slug}`} class="image-wrapper" aria-label={`View details for ${item.name}`}>
+    <img src={item.image} alt={item.name} loading="lazy" />
+  </a>
+  <h4 class="product-name">
+    <a href={`/product/${item.slug}`}>{item.name}</a>
+  </h4>
+  <p class="product-description">{item.description}</p>
+  <ul class="product-specs" aria-label="Specifications">
+    {item.specs.map(spec => (
+      <li>{spec}</li>
+    ))}
+  </ul>
+  <div class="product-footer">
+    <strong class="price">{item.formattedPrice}</strong>
+    <span class:list={['badge', { 'badge-stock': item.availability.includes('In stock'), 'badge-order': !item.availability.includes('In stock') }]}>
+      {item.availability}
+    </span>
+  </div>
+</article>
+
+<style>
+  .product-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: #EAE1D6;
+    border-radius: 6px;
+    overflow: hidden;
+    display: block;
+  }
+  .image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .image-wrapper:hover img {
+    transform: scale(1.04);
+  }
+  .product-name {
+    margin: 16px 0 6px;
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 24px;
+  }
+  .product-name a {
+    color: var(--text-dark);
+    text-decoration: none;
+  }
+  .product-name a:hover {
+    color: var(--accent-terracotta);
+  }
+  .product-description {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text-muted);
+    margin: 0 0 12px;
+    flex-grow: 1;
+  }
+  .product-specs {
+    list-style: none;
+    margin: 0 0 16px;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-size: 13px;
+    color: var(--text-subtle);
+  }
+  .product-specs li::after {
+    content: "·";
+    margin-left: 14px;
+    color: #B5ACA2;
+  }
+  .product-specs li:last-child::after {
+    content: "";
+    margin-left: 0;
+  }
+  .product-footer {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    border-top: 1px dashed rgba(28, 26, 23, 0.1);
+    padding-top: 12px;
+  }
+  .price {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+  .badge {
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .badge-stock {
+    color: var(--accent-green);
+  }
+  .badge-order {
+    color: var(--accent-terracotta);
+  }
+</style>

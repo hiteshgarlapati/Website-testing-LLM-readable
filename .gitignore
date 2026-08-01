@@ -2,24 +2,26 @@
 node_modules/
 frontend/node_modules/
 
-# Build outputs and cache
+# Build outputs and temporary artifacts
 dist/
 frontend/dist/
 .astro/
 frontend/.astro/
 .cache/
 
-# Environment and thumbnail files
+# Environment configurations
 .env
 .env.*
+!.env.example
 .thumbnail
 
-# Log files
+# Debug & Log files
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# OS metadata
+# System & OS metadata
 .DS_Store
 Thumbs.db

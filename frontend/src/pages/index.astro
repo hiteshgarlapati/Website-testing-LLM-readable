@@ -1,5 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import ProductCard from '../components/ProductCard.astro';
+import AboutSection from '../components/AboutSection.astro';
 import itemsData from '../data/items.json';
 
 // Define the categories with their subtitles exactly as in Mockup (2)
@@ -71,27 +74,8 @@ const catalogueSchema = {
 
 <Layout title="Oakline Furniture — Beds, Chairs, Tables & Sofas" jsonLd={catalogueSchema}>
   <main class="page-container" id="top">
-    <!-- Intro Section -->
-    <section aria-labelledby="intro-h" class="hero-section">
-      <div class="hero-headline">
-        <p class="meta-overline">Grand Rapids, Michigan · Est. 2014</p>
-        <h1 id="intro-h" class="main-title">Beds, chairs, tables and sofas. Twelve pieces, nothing else.</h1>
-      </div>
-      <p class="hero-description">
-        We keep one small catalogue and build every order by hand in our shop on Wealthy Street. Everything on this page is in stock or made to order in four to six weeks, shipped flat-packed or delivered fully assembled within Michigan.
-      </p>
-    </section>
-
-    <!-- Category Jump Nav -->
-    <nav aria-label="Jump to a category" class="category-nav">
-      <a href="#beds" class="nav-tag">Beds</a>
-      <a href="#chairs" class="nav-tag">Chairs</a>
-      <a href="#tables" class="nav-tag">Tables</a>
-      <a href="#sofas" class="nav-tag">Sofas</a>
-      <a href="#about" class="nav-tag">About us</a>
-      <a href="/llms.txt" target="_blank" class="nav-tag ai-tag">🤖 LLM Markdown</a>
-      <a href="/products.json" target="_blank" class="nav-tag ai-tag">⚡ Raw JSON</a>
-    </nav>
+    <!-- Hero & Jump Nav -->
+    <Hero />
 
     <!-- Catalogue Section -->
     <section id="catalogue" aria-labelledby="cat-h" class="catalogue-section">
@@ -128,26 +112,7 @@ const catalogueSchema = {
             <ul class="products-grid">
               {group.items.map(item => (
                 <li data-cat={group.id} data-search={`${item.searchTerms} ${item.name} ${item.description}`.toLowerCase()}>
-                  <article class="product-card">
-                    <a href={`/product/${item.slug}`} class="image-wrapper" aria-label={`View details for ${item.name}`}>
-                      <img src={item.image} alt={item.name} loading="lazy" />
-                    </a>
-                    <h4 class="product-name">
-                      <a href={`/product/${item.slug}`}>{item.name}</a>
-                    </h4>
-                    <p class="product-description">{item.description}</p>
-                    <ul class="product-specs" aria-label="Specifications">
-                      {item.specs.map(spec => (
-                        <li>{spec}</li>
-                      ))}
-                    </ul>
-                    <div class="product-footer">
-                      <strong class="price">{item.formattedPrice}</strong>
-                      <span class:list={['badge', { 'badge-stock': item.availability.includes('In stock'), 'badge-order': !item.availability.includes('In stock') }]}>
-                        {item.availability}
-                      </span>
-                    </div>
-                  </article>
+                  <ProductCard item={item} />
                 </li>
               ))}
             </ul>
@@ -160,54 +125,8 @@ const catalogueSchema = {
       </p>
     </section>
 
-    <!-- About Us & Admin Section -->
-    <section id="about" aria-labelledby="about-h" class="about-section">
-      <div class="about-col-main">
-        <h2 id="about-h" class="about-title">About us</h2>
-        <p>
-          Oakline is a two-person shop. Dana mills and joins; Peter finishes and delivers. We have made furniture on Wealthy Street since 2014, from hardwood bought within 200 miles of the shop.
-        </p>
-        <p style="margin-top: 16px;">
-          Every joint is mechanical — mortise, tenon, dovetail — so a piece can be taken apart and repaired instead of replaced. Send us a photo if something breaks, whenever that happens; repairs on our own work are free for the first ten years.
-        </p>
-      </div>
-      
-      <div class="about-col-contact">
-        <h3 class="overline-header">Visit or write</h3>
-        <ul class="contact-list">
-          <li>418 Wealthy Street SE<br />Grand Rapids, MI 49503</li>
-          <li>Tuesday–Saturday, 10am–6pm</li>
-          <li><a href="tel:+16165550142">(616) 555-0142</a></li>
-          <li><a href="mailto:shop@oaklinefurniture.example">shop@oaklinefurniture.example</a></li>
-        </ul>
-        <p class="delivery-note">
-          Free delivery and assembly within 90 miles. Flat-rate $180 crating anywhere else in the lower 48.
-        </p>
-      </div>
-
-      <!-- Shop Admin Portal -->
-      <aside id="admin" aria-labelledby="admin-h" class="admin-card">
-        <h3 id="admin-h" class="overline-header">Admin</h3>
-        <p class="admin-intro">Shop staff only. Sign in to edit prices, stock status and photos.</p>
-        <form action="#" method="post" class="admin-form" onsubmit="alert('Admin portal mockup — Authentication requires server-side credentials.'); return false;">
-          <div class="form-field">
-            <label for="admin-email">Staff email</label>
-            <input id="admin-email" name="email" type="email" autocomplete="username" required placeholder="staff@oaklinefurniture.example" />
-          </div>
-          <div class="form-field">
-            <label for="admin-pass">Password</label>
-            <input id="admin-pass" name="password" type="password" autocomplete="current-password" required />
-          </div>
-          <button type="submit" class="btn-signin">Sign in</button>
-        </form>
-        <ul class="admin-links">
-          <li><a href="/products.json" target="_blank">Edit catalogue (items.json)</a></li>
-          <li><a href="#admin" onclick="alert('Viewing open orders requires staff authentication.'); return false;">Open orders · 7</a></li>
-          <li><a href="mailto:dana@oaklinefurniture.example">Reset a staff password</a></li>
-        </ul>
-        <p class="build-timestamp">Last catalogue build: 1 August 2026, 9:12am</p>
-      </aside>
-    </section>
+    <!-- About Us & Admin Portal -->
+    <AboutSection />
   </main>
 
   <!-- Progressive Enhancement Search Script (Runs client-side without altering static HTML for scrapers) -->
@@ -261,70 +180,6 @@ const catalogueSchema = {
     max-width: 1240px;
     margin: 0 auto;
     padding: 0 28px;
-  }
-
-  /* Hero Section */
-  .hero-section {
-    padding: 64px 0 44px;
-    display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-    gap: 56px;
-    align-items: end;
-  }
-  .meta-overline {
-    margin: 0 0 18px;
-    font-size: 13px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--text-subtle);
-  }
-  .main-title {
-    font-family: var(--font-serif);
-    font-weight: 400;
-    font-size: clamp(40px, 5.5vw, 72px);
-    line-height: 0.98;
-    letter-spacing: -0.02em;
-    color: var(--text-dark);
-    text-wrap: balance;
-  }
-  .hero-description {
-    font-size: 18px;
-    line-height: 1.6;
-    color: var(--text-muted);
-    max-width: 46ch;
-  }
-
-  /* Category Nav */
-  .category-nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 0 0 34px;
-    border-bottom: 1px solid var(--border-subtle);
-  }
-  .nav-tag {
-    border: 1px solid rgba(28, 26, 23, 0.22);
-    border-radius: 999px;
-    padding: 9px 18px;
-    font-size: 14px;
-    color: var(--text-dark);
-    text-decoration: none;
-    transition: all 0.2s ease;
-  }
-  .nav-tag:hover {
-    background: var(--text-dark);
-    color: var(--bg-main);
-    text-decoration: none;
-  }
-  .ai-tag {
-    background: rgba(163, 77, 51, 0.08);
-    border-color: rgba(163, 77, 51, 0.4);
-    color: var(--accent-terracotta);
-    font-weight: 500;
-  }
-  .ai-tag:hover {
-    background: var(--accent-terracotta);
-    color: #fff;
   }
 
   /* Catalogue Header & Search */
@@ -420,91 +275,6 @@ const catalogueSchema = {
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 36px;
   }
-  .product-card {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-  .image-wrapper {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 4/3;
-    background: #EAE1D6;
-    border-radius: 6px;
-    overflow: hidden;
-    display: block;
-  }
-  .image-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .image-wrapper:hover img {
-    transform: scale(1.04);
-  }
-  .product-name {
-    margin: 16px 0 6px;
-    font-family: var(--font-serif);
-    font-weight: 400;
-    font-size: 24px;
-  }
-  .product-name a {
-    color: var(--text-dark);
-    text-decoration: none;
-  }
-  .product-name a:hover {
-    color: var(--accent-terracotta);
-  }
-  .product-description {
-    font-size: 15px;
-    line-height: 1.55;
-    color: var(--text-muted);
-    margin: 0 0 12px;
-    flex-grow: 1;
-  }
-  .product-specs {
-    list-style: none;
-    margin: 0 0 16px;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 14px;
-    font-size: 13px;
-    color: var(--text-subtle);
-  }
-  .product-specs li::after {
-    content: "·";
-    margin-left: 14px;
-    color: #B5ACA2;
-  }
-  .product-specs li:last-child::after {
-    content: "";
-    margin-left: 0;
-  }
-  .product-footer {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 10px;
-    border-top: 1px dashed rgba(28, 26, 23, 0.1);
-    padding-top: 12px;
-  }
-  .price {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-dark);
-  }
-  .badge {
-    font-size: 13px;
-    font-weight: 500;
-  }
-  .badge-stock {
-    color: var(--accent-green);
-  }
-  .badge-order {
-    color: var(--accent-terracotta);
-  }
 
   .empty-state {
     margin: 44px 0 0;
@@ -516,122 +286,6 @@ const catalogueSchema = {
     color: var(--text-muted);
   }
 
-  /* About Us & Admin Section */
-  .about-section {
-    margin: 96px 0 0;
-    padding: 56px 0 0;
-    border-top: 1px solid var(--border-subtle);
-    display: grid;
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr) minmax(0, 0.95fr);
-    gap: 48px;
-  }
-  .about-title {
-    margin: 0 0 20px;
-    font-family: var(--font-serif);
-    font-weight: 400;
-    font-size: 40px;
-    letter-spacing: -0.01em;
-  }
-  .about-col-main p {
-    font-size: 17px;
-    line-height: 1.65;
-    color: var(--text-muted);
-  }
-  .overline-header {
-    margin: 0 0 14px;
-    font-size: 13px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--text-subtle);
-    font-weight: 600;
-  }
-  .contact-list {
-    list-style: none;
-    display: grid;
-    gap: 12px;
-    font-size: 16px;
-    line-height: 1.5;
-    color: var(--text-muted);
-  }
-  .delivery-note {
-    margin: 22px 0 0;
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--text-subtle);
-  }
-
-  /* Shop Admin Portal */
-  .admin-card {
-    background: #EFEAE2;
-    border: 1px solid rgba(28, 26, 23, 0.16);
-    border-radius: 8px;
-    padding: 26px;
-    align-self: start;
-    box-shadow: var(--shadow-sm);
-  }
-  .admin-intro {
-    margin: 0 0 18px;
-    font-size: 14px;
-    line-height: 1.55;
-    color: var(--text-muted);
-  }
-  .admin-form {
-    display: grid;
-    gap: 12px;
-  }
-  .form-field {
-    display: grid;
-    gap: 6px;
-  }
-  .form-field label {
-    font-size: 13px;
-    color: var(--text-muted);
-    font-weight: 500;
-  }
-  .form-field input {
-    height: 42px;
-    border: 1px solid rgba(28, 26, 23, 0.24);
-    border-radius: 4px;
-    background: #FFFDFA;
-    padding: 0 12px;
-    font: 400 14px/1.2 var(--font-sans);
-    color: var(--text-dark);
-    width: 100%;
-    transition: border-color 0.2s;
-  }
-  .form-field input:focus {
-    border-color: var(--accent-terracotta);
-    outline: none;
-  }
-  .btn-signin {
-    height: 46px;
-    border: 0;
-    border-radius: 999px;
-    background: var(--text-dark);
-    color: #F6F2EC;
-    font: 500 15px/1 var(--font-sans);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin-top: 4px;
-  }
-  .btn-signin:hover {
-    background: var(--accent-terracotta);
-  }
-  .admin-links {
-    list-style: none;
-    margin: 20px 0 0;
-    padding: 18px 0 0;
-    border-top: 1px solid rgba(28, 26, 23, 0.16);
-    display: grid;
-    gap: 10px;
-    font-size: 14px;
-  }
-  .build-timestamp {
-    margin: 16px 0 0;
-    font-size: 12px;
-    color: var(--text-subtle);
-  }
-
   .sr-only {
     position: absolute;
     width: 1px;
@@ -641,12 +295,5 @@ const catalogueSchema = {
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
     border: 0;
-  }
-
-  @media (max-width: 992px) {
-    .hero-section, .about-section {
-      grid-template-columns: 1fr;
-      gap: 36px;
-    }
   }
 </style>

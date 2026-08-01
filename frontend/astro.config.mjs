@@ -3,7 +3,6 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const backendPath = path.resolve(__dirname, '../backend');
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,7 +11,7 @@ export default defineConfig({
   vite: {
     server: {
       fs: {
-        allow: [__dirname, backendPath]
+        allow: [__dirname]
       }
     }
   }

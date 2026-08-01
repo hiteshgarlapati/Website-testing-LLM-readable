@@ -1,6 +1,8 @@
-# Standard search engines
+# Standard search engines and AI web scrapers
 User-agent: *
 Allow: /
+Allow: /llms.txt
+Allow: /products.json
 
 # OpenAI Crawlers (ChatGPT & Search)
 User-agent: GPTBot
@@ -34,7 +36,5 @@ Allow: /
 User-agent: FacebookBot
 Allow: /
 
-# Sitemap and AI Text Summary Pointers
+# Sitemap Pointer
 Sitemap: https://oaklinefurniture.example/sitemap.xml
-Allow: /llms.txt
-Allow: /products.json

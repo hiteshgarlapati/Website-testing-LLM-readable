@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: oakline-furniture:production
+    container_name: oakline-furniture-app
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8080}:80"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - SITE_URL=${SITE_URL:-https://oaklinefurniture.example}
+    networks:
+      - web-network
+
+networks:
+  web-network:
+    driver: bridge
