@@ -1,4 +1,40 @@
+# Standard search engines
 User-agent: *
 Allow: /
 
+# OpenAI Crawlers (ChatGPT & Search)
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic Crawlers (Claude)
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-Web
+Allow: /
+
+# Perplexity AI Crawlers
+User-agent: PerplexityBot
+Allow: /
+
+# Google AI & Gemini Crawlers
+User-agent: Google-Extended
+Allow: /
+
+# Apple AI & Intelligence Crawlers
+User-agent: Applebot-Extended
+Allow: /
+
+# Meta & Open Source LLM Scrapers
+User-agent: Meta-ExternalAgent
+Allow: /
+User-agent: FacebookBot
+Allow: /
+
+# Sitemap and AI Text Summary Pointers
 Sitemap: https://oaklinefurniture.example/sitemap.xml
+Allow: /llms.txt
+Allow: /products.json
