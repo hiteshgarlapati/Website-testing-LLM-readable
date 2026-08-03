@@ -11,7 +11,10 @@ In `frontend/`, create a `.env` file:
 SITE_URL=https://YOUR-DOMAIN.com
 ```
 
-JSON-LD, sitemap.xml, robots.txt, and llms.txt all use this URL.
+JSON-LD, sitemap.xml, robots.txt, llms.txt, and **product image URLs in products.json**
+all use this URL. After setting it, rebuild so absolute picture links point at your live host
+(e.g. `https://YOUR-DOMAIN.com/images/p4.png`) — that is what lets multimodal LLMs fetch photos.
+
 If you skip it, they keep the placeholder `https://oaklinefurniture.example`.
 
 ## 2. Build

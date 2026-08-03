@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import itemsData from '../../data/items.json';
+import { absoluteUrl, siteOrigin } from '../../lib/urls.js';
 
 export async function getStaticPaths() {
   return itemsData.map((item) => ({
@@ -11,10 +12,8 @@ export async function getStaticPaths() {
 
 const { item } = Astro.props;
 
-const site = Astro.site?.origin ?? 'https://oaklinefurniture.example';
-
-const absoluteImage = (img) =>
-  img.startsWith('http') ? img : `${site}${img}`;
+const site = siteOrigin(Astro.site);
+const absoluteImage = (img) => absoluteUrl(site, img);
 
 // Offers without a validity date get flagged in merchant listings. Prices are
 // quoted per build slot, so hold them for a year from render.

@@ -4,11 +4,10 @@ import Hero from '../components/Hero.astro';
 import ProductCard from '../components/ProductCard.astro';
 import AboutSection from '../components/AboutSection.astro';
 import itemsData from '../data/items.json';
+import { absoluteUrl, siteOrigin } from '../lib/urls.js';
 
-const site = Astro.site?.origin ?? 'https://oaklinefurniture.example';
-
-const absoluteImage = (img) =>
-  img.startsWith('http') ? img : `${site}${img}`;
+const site = siteOrigin(Astro.site);
+const absoluteImage = (img) => absoluteUrl(site, img);
 
 // Define the categories with their subtitles exactly as in Mockup (2)
 const categories = [
