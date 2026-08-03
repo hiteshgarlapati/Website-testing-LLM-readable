@@ -1,4 +1,5 @@
 # Stage 1: Build the static Astro site (Node 22)
+# Uses the monorepo root package-lock.json (npm workspaces).
 FROM node:22-alpine AS build
 
 WORKDIR /app
@@ -8,18 +9,15 @@ ARG SITE_URL=https://oaklinefurniture.example
 ENV SITE_URL=$SITE_URL
 ENV NODE_ENV=production
 
-# Copy dependency manifests first for better layer caching
-COPY package.json ./
-COPY frontend/package.json frontend/
-COPY frontend/package-lock.json frontend/
+# Copy workspace manifests — lockfile lives at the repo root
+COPY package.json package-lock.json ./
+COPY frontend/package.json ./frontend/
 
-WORKDIR /app/frontend
-RUN npm ci --omit=dev
+# Clean install from the root lockfile (installs the frontend workspace)
+RUN npm ci
 
 # Copy application source and build
-WORKDIR /app
 COPY frontend ./frontend
-
 WORKDIR /app/frontend
 RUN npm run build
 

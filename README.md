@@ -45,7 +45,10 @@ Upload everything in `frontend/dist/` to your host (`public_html` on GoDaddy). S
 
 ## Production with Docker
 
+Run these commands from the **repository root** (not from `frontend/`):
+
 ```bash
+cd Website-testing-LLM-readable
 cp .env.example .env
 # set SITE_URL=https://your-real-domain.com
 
