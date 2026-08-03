@@ -27,8 +27,6 @@ User-agent: *
 Allow: /
 Allow: /llms.txt
 Allow: /products.json
-Disallow: /admin
-Disallow: /api/
 
 ${blocks.join('\n\n')}
 

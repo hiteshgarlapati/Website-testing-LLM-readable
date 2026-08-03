@@ -3,13 +3,10 @@ import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
 import ProductCard from '../components/ProductCard.astro';
 import AboutSection from '../components/AboutSection.astro';
-import { getAllItems } from '../lib/db.js';
-
-const itemsData = await getAllItems();
+import itemsData from '../data/items.json';
 
 const site = Astro.site?.origin ?? 'https://oaklinefurniture.example';
 
-// Local paths need the site domain prepended; Cloudinary URLs are already absolute
 const absoluteImage = (img) =>
   img.startsWith('http') ? img : `${site}${img}`;
 

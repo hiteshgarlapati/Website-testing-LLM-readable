@@ -1,0 +1,6 @@
+# Created by Vercel CLI (folder may reappear locally — keep ignored)
+.vercel
+.env
+.env.local
+.env.*.local
+dist

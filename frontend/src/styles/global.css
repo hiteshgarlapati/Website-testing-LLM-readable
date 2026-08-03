@@ -155,17 +155,6 @@ header {
   text-decoration: none;
 }
 
-.btn-admin-pill {
-  background: var(--text-dark);
-  color: var(--bg-main);
-}
-
-.btn-admin-pill:hover {
-  background: var(--accent-terracotta);
-  border-color: var(--accent-terracotta);
-  color: var(--bg-main);
-}
-
 footer {
   border-top: 1px solid var(--border-subtle);
   background: var(--bg-footer);

@@ -1,17 +1,18 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getAllItems, getItemBySlug } from '../../lib/db.js';
+import itemsData from '../../data/items.json';
 
-// Fetch fresh from MongoDB on each request so admin edits reflect immediately
-const item = await getItemBySlug(Astro.params.slug);
-if (!item) {
-  return new Response('Product not found', { status: 404 });
+export async function getStaticPaths() {
+  return itemsData.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
 }
-const itemsData = await getAllItems();
+
+const { item } = Astro.props;
 
 const site = Astro.site?.origin ?? 'https://oaklinefurniture.example';
 
-// Local paths need the site domain prepended; Cloudinary URLs are already absolute
 const absoluteImage = (img) =>
   img.startsWith('http') ? img : `${site}${img}`;
 

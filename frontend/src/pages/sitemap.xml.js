@@ -1,4 +1,4 @@
-import { getAllItems } from '../lib/db.js';
+import itemsData from '../data/items.json';
 
 // Falls back to the configured site when a request context has no origin.
 const DEFAULT_SITE = 'https://oaklinefurniture.example';
@@ -13,10 +13,9 @@ const escapeXml = value =>
 
 export async function GET(context) {
   const base = (context.site?.origin ?? DEFAULT_SITE).replace(/\/$/, '');
-  const items = await getAllItems();
+  const items = itemsData;
 
-  // Admin edits stamp updatedAt; items never edited simply omit lastmod rather
-  // than claiming a date we cannot support.
+  // Prefer an explicit updatedAt when present; otherwise omit lastmod.
   const lastmodOf = item =>
     item.updatedAt ? String(item.updatedAt).slice(0, 10) : null;
 

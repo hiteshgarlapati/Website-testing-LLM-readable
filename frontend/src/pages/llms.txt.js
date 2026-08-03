@@ -1,4 +1,4 @@
-import { getAllItems } from '../lib/db.js';
+import itemsData from '../data/items.json';
 
 const DEFAULT_SITE = 'https://oaklinefurniture.example';
 
@@ -11,7 +11,7 @@ const CATEGORIES = [
 
 export async function GET(context) {
   const site = (context.site?.origin ?? DEFAULT_SITE).replace(/\/$/, '');
-  const items = await getAllItems();
+  const items = itemsData;
 
   // Numbering runs across the whole catalogue, not per category, so the list
   // reads the same way the old hand-written file did.

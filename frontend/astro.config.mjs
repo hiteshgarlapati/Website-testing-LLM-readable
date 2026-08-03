@@ -1,5 +1,4 @@
 import { defineConfig } from 'astro/config';
-import vercel from '@astrojs/vercel';
 import { loadEnv } from 'vite';
 import { fileURLToPath } from 'node:url';
 
@@ -13,9 +12,7 @@ const SITE_URL = env.SITE_URL || 'https://oaklinefurniture.example';
 
 // https://astro.build/config
 export default defineConfig({
-  // Server-rendered so admin edits reflect on the live site instantly
-  output: 'server',
-  adapter: vercel(),
+  output: 'static',
   site: SITE_URL,
   vite: {
     server: {
