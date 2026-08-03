@@ -5,13 +5,26 @@ interface Props {
   title?: string;
   description?: string;
   jsonLd?: object;
+  image?: string;
 }
 
 const {
   title = "Oakline Furniture — Solid-Wood Furniture, Handcrafted in Michigan",
   description = "Solid-wood furniture made in small batches in Grand Rapids, Michigan. Twelve pieces, built to order with solid oak, walnut, maple, and cherry.",
-  jsonLd
+  jsonLd,
+  image = "/images/p1.png"
 } = Astro.props;
+
+// Every absolute URL derives from the configured site, so pointing SITE_URL at
+// the live domain moves canonical, OpenGraph and JSON-LD identifiers together.
+const site = Astro.site?.origin ?? "https://oaklinefurniture.example";
+
+// Crawlers and link unfurlers need an absolute image URL, never a local path.
+const socialImage = image.startsWith('http') ? image : `${site}${image}`;
+
+// Strip query strings and trailing slashes so every variant of a URL declares
+// the same canonical target.
+const canonical = new URL(Astro.url.pathname.replace(/(.)\/$/, '$1'), site).href;
 
 // Global Store Schema
 const storeSchema = {
@@ -19,10 +32,10 @@ const storeSchema = {
   "@graph": [
     {
       "@type": "FurnitureStore",
-      "@id": "https://oaklinefurniture.example/#store",
+      "@id": `${site}/#store`,
       "name": "Oakline Furniture",
       "description": "Solid-wood beds, chairs, tables and sofas made in small batches in Grand Rapids, Michigan. Twelve pieces, built to order.",
-      "url": "https://oaklinefurniture.example/",
+      "url": `${site}/`,
       "telephone": "+1-616-555-0142",
       "email": "shop@oaklinefurniture.example",
       "priceRange": "$340-$3,240",
@@ -50,13 +63,24 @@ const finalJsonLd = jsonLd ? jsonLd : storeSchema;
   <title>{title}</title>
   <meta name="description" content={description} />
   <meta name="robots" content="index, follow" />
-  
+  <meta name="robots" content="max-image-preview:large, max-snippet:-1" />
+  <link rel="canonical" href={canonical} />
+
   <!-- OpenGraph / Social -->
   <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Oakline Furniture" />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
-  <meta property="og:url" content={Astro.url.href} />
-  
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={socialImage} />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter / X card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={socialImage} />
+
   <!-- AI / LLM Scraper Links -->
   <link rel="alternate" type="text/markdown" title="LLM Plain Text Summary" href="/llms.txt" />
   <link rel="alternate" type="application/json" title="Structured Products JSON" href="/products.json" />

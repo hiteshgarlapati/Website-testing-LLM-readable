@@ -7,9 +7,11 @@ import { getAllItems } from '../lib/db.js';
 
 const itemsData = await getAllItems();
 
+const site = Astro.site?.origin ?? 'https://oaklinefurniture.example';
+
 // Local paths need the site domain prepended; Cloudinary URLs are already absolute
 const absoluteImage = (img) =>
-  img.startsWith('http') ? img : `https://oaklinefurniture.example${img}`;
+  img.startsWith('http') ? img : `${site}${img}`;
 
 // Define the categories with their subtitles exactly as in Mockup (2)
 const categories = [
@@ -31,10 +33,10 @@ const catalogueSchema = {
   "@graph": [
     {
       "@type": "FurnitureStore",
-      "@id": "https://oaklinefurniture.example/#store",
+      "@id": `${site}/#store`,
       "name": "Oakline Furniture",
       "description": "Solid-wood beds, chairs, tables and sofas made in small batches in Grand Rapids, Michigan. Twelve pieces, built to order.",
-      "url": "https://oaklinefurniture.example/",
+      "url": `${site}/`,
       "telephone": "+1-616-555-0142",
       "priceRange": "$340-$3,240",
       "address": {
@@ -49,7 +51,7 @@ const catalogueSchema = {
     },
     ...groupedItems.map(cat => ({
       "@type": "ItemList",
-      "@id": `https://oaklinefurniture.example/#${cat.id}`,
+      "@id": `${site}/#${cat.id}`,
       "name": cat.name,
       "description": cat.subtitle,
       "numberOfItems": cat.items.length,
@@ -61,19 +63,77 @@ const catalogueSchema = {
           "name": item.name,
           "category": item.category,
           "description": item.description,
-          "url": `https://oaklinefurniture.example/product/${item.slug}`,
+          "url": `${site}/product/${item.slug}`,
           "image": absoluteImage(item.image),
+          "sku": item.id,
           "material": item.specs[0] || "Solid wood",
           "brand": { "@type": "Brand", "name": "Oakline" },
           "offers": {
             "@type": "Offer",
             "price": item.price,
             "priceCurrency": "USD",
-            "availability": item.schemaAvailability
+            "availability": item.schemaAvailability,
+            "url": `${site}/product/${item.slug}`
           }
         }
       }))
-    }))
+    })),
+    // Question-shaped content is what assistants quote when answering
+    // "where can I buy…" style prompts.
+    {
+      "@type": "FAQPage",
+      "@id": `${site}/#faq`,
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Where is Oakline Furniture made?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Every piece is built in small batches at our shop at 418 Wealthy Street SE in Grand Rapids, Michigan, by Dana and Peter, using hardwood sourced within 200 miles of the shop."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What wood does Oakline use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Solid white oak, walnut, maple, cherry and ash. Joints are mechanical — mortise and tenon, and dovetails — rather than glued composite panels."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does delivery cost?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Delivery and assembly are free within 90 miles of Grand Rapids. Anywhere else in the lower 48 US states is a flat $180 crating fee."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Oakline Furniture offer a warranty?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Repairs on any Oakline piece are free for the first 10 years."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How long does a made-to-order piece take?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most in-stock pieces ship immediately. Made-to-order pieces such as the Fenwick Sectional and Marrow Two-Seat Sofa take about 6 weeks, and the Wick Bunk Bed about 5 weeks."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I order from Oakline Furniture?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Orders are placed directly with the shop by email at shop@oaklinefurniture.example or by phone at +1 (616) 555-0142, since each piece is built in a small custom batch."
+          }
+        }
+      ]
+    }
   ]
 };
 ---
