@@ -52,7 +52,7 @@ cp .env.example .env
 # set SITE_URL=https://YOUR-DOMAIN.com
 
 docker compose up -d --build
-# http://localhost:8080
+# http://localhost:8004
 ```
 
 Requires Docker Desktop. Image uses **Node 22** to build, then **Nginx** to serve.

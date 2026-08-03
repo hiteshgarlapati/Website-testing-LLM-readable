@@ -53,14 +53,14 @@ cp .env.example .env
 # set SITE_URL=https://your-real-domain.com
 
 docker compose up -d --build
-# site: http://localhost:8080
+# site: http://localhost:8004
 ```
 
 Or:
 
 ```bash
 docker build --build-arg SITE_URL=https://your-real-domain.com -t oakline-furniture:production .
-docker run --rm -p 8080:80 oakline-furniture:production
+docker run --rm -p 8004:80 oakline-furniture:production
 ```
 
 `SITE_URL` is a **build arg** — it is compiled into the static files. Changing it later requires a rebuild.
