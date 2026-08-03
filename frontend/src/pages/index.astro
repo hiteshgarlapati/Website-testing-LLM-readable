@@ -60,7 +60,7 @@ const catalogueSchema = {
           "name": item.name,
           "category": item.category,
           "description": item.description,
-          "url": `${site}/product/${item.slug}`,
+          "url": `${site}/product/${item.slug}/`,
           "image": absoluteImage(item.image),
           "sku": item.id,
           "material": item.specs[0] || "Solid wood",
@@ -70,7 +70,7 @@ const catalogueSchema = {
             "price": item.price,
             "priceCurrency": "USD",
             "availability": item.schemaAvailability,
-            "url": `${site}/product/${item.slug}`
+            "url": `${site}/product/${item.slug}/`
           }
         }
       }))

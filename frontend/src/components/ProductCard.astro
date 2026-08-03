@@ -19,11 +19,11 @@ const { item } = Astro.props;
 ---
 
 <article class="product-card">
-  <a href={`/product/${item.slug}`} class="image-wrapper" aria-label={`View details for ${item.name}`}>
+  <a href={`/product/${item.slug}/`} class="image-wrapper" aria-label={`View details for ${item.name}`}>
     <img src={item.image} alt={item.name} loading="lazy" />
   </a>
   <h4 class="product-name">
-    <a href={`/product/${item.slug}`}>{item.name}</a>
+    <a href={`/product/${item.slug}/`}>{item.name}</a>
   </h4>
   <p class="product-description">{item.description}</p>
   <ul class="product-specs" aria-label="Specifications">

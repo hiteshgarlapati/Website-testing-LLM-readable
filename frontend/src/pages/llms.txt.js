@@ -28,7 +28,7 @@ export async function GET(context) {
         `   - **Availability:** ${item.availability}`,
         `   - **Specs:** ${item.specs.join(', ')}`,
         `   - **Description:** ${item.description}`,
-        `   - **URL:** ${site}/product/${item.slug}`
+        `   - **URL:** ${site}/product/${item.slug}/`
       ].join('\n');
     });
 

@@ -22,9 +22,10 @@ const site = Astro.site?.origin ?? "https://oaklinefurniture.example";
 // Crawlers and link unfurlers need an absolute image URL, never a local path.
 const socialImage = image.startsWith('http') ? image : `${site}${image}`;
 
-// Strip query strings and trailing slashes so every variant of a URL declares
-// the same canonical target.
-const canonical = new URL(Astro.url.pathname.replace(/(.)\/$/, '$1'), site).href;
+// Drop query strings, but keep the trailing slash: the build emits directory
+// -style pages, and the host 301s the slashless form. Canonical must name the
+// URL that actually serves a 200, not the one that redirects to it.
+const canonical = new URL(Astro.url.pathname, site).href;
 
 // Global Store Schema
 const storeSchema = {

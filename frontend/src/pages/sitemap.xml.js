@@ -28,7 +28,7 @@ export async function GET(context) {
   const urls = [
     { loc: `${base}/`, changefreq: 'weekly', priority: '1.0', lastmod: newestEdit },
     ...items.map(item => ({
-      loc: `${base}/product/${item.slug}`,
+      loc: `${base}/product/${item.slug}/`,
       changefreq: 'monthly',
       priority: '0.8',
       lastmod: lastmodOf(item)
