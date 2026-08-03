@@ -2,6 +2,9 @@
   "name": "oakline-furniture",
   "type": "module",
   "version": "1.0.0",
+  "engines": {
+    "node": ">=22"
+  },
   "sideEffects": [
     "**/*.css",
     "**/*.scss",
@@ -9,7 +12,7 @@
   ],
   "scripts": {
     "dev": "astro dev",
-    "start": "astro dev",
+    "start": "astro preview",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

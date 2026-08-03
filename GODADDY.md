@@ -43,8 +43,17 @@ Output: `frontend/dist/`
    - `/robots.txt`
    - `/sitemap.xml`
 
-## Notes
+## 4. Docker production (optional)
 
-- This is a **static** site — no Node server, no MongoDB, no admin page.
-- To change catalogue text/prices later, edit `frontend/src/data/items.json`, rebuild, and re-upload.
-- To change images, replace files under `frontend/public/images/`, rebuild, re-upload.
+If the recipient runs containers instead of plain static hosting:
+
+```bash
+cp .env.example .env
+# set SITE_URL=https://YOUR-DOMAIN.com
+
+docker compose up -d --build
+# http://localhost:8080
+```
+
+Requires Docker Desktop. Image uses **Node 22** to build, then **Nginx** to serve.
+
