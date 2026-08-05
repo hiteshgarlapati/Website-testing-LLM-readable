@@ -1,39 +1,48 @@
-# Stage 1: Build base engine
-FROM node:20-alpine AS build
+# Stage 1: Build the static Astro site (Node 22)
+# Uses the monorepo root package-lock.json (npm workspaces).
+FROM node:22-alpine AS build
 
 WORKDIR /app
 
-# Copy dependency definition files
-COPY package.json ./
-COPY frontend/package.json frontend/
-COPY frontend/package-lock.json* frontend/
+# Baked into HTML, JSON-LD, sitemap, llms.txt, and absolute image URLs
+ARG SITE_URL=https://oaklinefurniture.example
+ENV SITE_URL=$SITE_URL
+ENV NODE_ENV=production
 
-# Install dependencies inside the frontend workspace
-WORKDIR /app/frontend
-RUN npm install
+# Copy workspace manifests — lockfile lives at the repo root
+COPY package.json package-lock.json ./
+COPY frontend/package.json ./frontend/
 
-# Copy source application files
-WORKDIR /app
+# Clean install from the root lockfile (installs the frontend workspace)
+RUN npm ci
+
+# Copy application source and build
 COPY frontend ./frontend
-
-# Execute production static build
 WORKDIR /app/frontend
 RUN npm run build
 
-# Stage 2: Lightweight Nginx Production Server
-FROM nginx:alpine AS production
+# Stage 2: Serve the static bundle with Nginx
+FROM nginx:1.27-alpine AS production
 
-# Remove default nginx static assets
+LABEL org.opencontainers.image.title="Oakline Furniture"
+LABEL org.opencontainers.image.description="AI-readable static furniture catalogue"
+LABEL org.opencontainers.image.source="https://github.com/hiteshgarlapati/Website-testing-LLM-readable"
+
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copy built production bundle from stage 1
 COPY --from=build /app/frontend/dist /usr/share/nginx/html
-
-# Copy optimized production Nginx config
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose HTTP port
+# Confirm critical AI-facing files exist in the image
+RUN test -f /usr/share/nginx/html/index.html \
+ && test -f /usr/share/nginx/html/products.json \
+ && test -f /usr/share/nginx/html/llms.txt \
+ && test -f /usr/share/nginx/html/robots.txt \
+ && test -f /usr/share/nginx/html/sitemap.xml
+
 EXPOSE 80
 
-# Run Nginx in foreground
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget -qO- http://127.0.0.1/ >/dev/null || exit 1
+
 CMD ["nginx", "-g", "daemon off;"]

@@ -22,10 +22,15 @@ const site = Astro.site?.origin ?? "https://oaklinefurniture.example";
 // Crawlers and link unfurlers need an absolute image URL, never a local path.
 const socialImage = image.startsWith('http') ? image : `${site}${image}`;
 
-// Drop query strings, but keep the trailing slash: the build emits directory
-// -style pages, and the host 301s the slashless form. Canonical must name the
-// URL that actually serves a 200, not the one that redirects to it.
-const canonical = new URL(Astro.url.pathname, site).href;
+// build.format 'file' makes Astro.url.pathname carry the on-disk name
+// (/index.html, /product/slug.html), but every link, sitemap entry and JSON-LD
+// id uses the extensionless form the server resolves via try_files. Canonical
+// has to name that same URL or it splits the indexing signal for each page.
+const canonicalPath = Astro.url.pathname
+  .replace(/\/index\.html$/, '/')
+  .replace(/\.html$/, '')
+  .replace(/(.)\/$/, '$1');
+const canonical = new URL(canonicalPath || '/', site).href;
 
 // Global Store Schema
 const storeSchema = {

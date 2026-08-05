@@ -11,7 +11,10 @@ In `frontend/`, create a `.env` file:
 SITE_URL=https://YOUR-DOMAIN.com
 ```
 
-JSON-LD, sitemap.xml, robots.txt, and llms.txt all use this URL.
+JSON-LD, sitemap.xml, robots.txt, llms.txt, and **product image URLs in products.json**
+all use this URL. After setting it, rebuild so absolute picture links point at your live host
+(e.g. `https://YOUR-DOMAIN.com/images/p4.png`) — that is what lets multimodal LLMs fetch photos.
+
 If you skip it, they keep the placeholder `https://oaklinefurniture.example`.
 
 ## 2. Build
@@ -40,8 +43,17 @@ Output: `frontend/dist/`
    - `/robots.txt`
    - `/sitemap.xml`
 
-## Notes
+## 4. Docker production (optional)
 
-- This is a **static** site — no Node server, no MongoDB, no admin page.
-- To change catalogue text/prices later, edit `frontend/src/data/items.json`, rebuild, and re-upload.
-- To change images, replace files under `frontend/public/images/`, rebuild, re-upload.
+If the recipient runs containers instead of plain static hosting:
+
+```bash
+cp .env.example .env
+# set SITE_URL=https://YOUR-DOMAIN.com
+
+docker compose up -d --build
+# http://localhost:8004
+```
+
+Requires Docker Desktop. Image uses **Node 22** to build, then **Nginx** to serve.
+

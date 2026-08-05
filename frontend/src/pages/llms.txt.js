@@ -1,6 +1,5 @@
 import itemsData from '../data/items.json';
-
-const DEFAULT_SITE = 'https://oaklinefurniture.example';
+import { absoluteUrl, siteOrigin } from '../lib/urls.js';
 
 const CATEGORIES = [
   { id: 'beds', name: 'Beds', subtitle: 'Slatted platforms in maple, oak and ash — no box spring needed' },
@@ -10,7 +9,7 @@ const CATEGORIES = [
 ];
 
 export async function GET(context) {
-  const site = (context.site?.origin ?? DEFAULT_SITE).replace(/\/$/, '');
+  const site = siteOrigin(context.site);
   const items = itemsData;
 
   // Numbering runs across the whole catalogue, not per category, so the list
@@ -28,7 +27,8 @@ export async function GET(context) {
         `   - **Availability:** ${item.availability}`,
         `   - **Specs:** ${item.specs.join(', ')}`,
         `   - **Description:** ${item.description}`,
-        `   - **URL:** ${site}/product/${item.slug}/`
+        `   - **Image:** ${absoluteUrl(site, item.image)}`,
+        `   - **URL:** ${site}/product/${item.slug}`
       ].join('\n');
     });
 

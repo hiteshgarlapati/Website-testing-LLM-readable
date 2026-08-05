@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import itemsData from '../../data/items.json';
+import { absoluteUrl, siteOrigin } from '../../lib/urls.js';
 
 export async function getStaticPaths() {
   return itemsData.map((item) => ({
@@ -11,10 +12,8 @@ export async function getStaticPaths() {
 
 const { item } = Astro.props;
 
-const site = Astro.site?.origin ?? 'https://oaklinefurniture.example';
-
-const absoluteImage = (img) =>
-  img.startsWith('http') ? img : `${site}${img}`;
+const site = siteOrigin(Astro.site);
+const absoluteImage = (img) => absoluteUrl(site, img);
 
 // Offers without a validity date get flagged in merchant listings. Prices are
 // quoted per build slot, so hold them for a year from render.
@@ -45,17 +44,17 @@ const productSchema = {
           "@type": "ListItem",
           "position": 3,
           "name": item.name,
-          "item": `${site}/product/${item.slug}/`
+          "item": `${site}/product/${item.slug}`
         }
       ]
     },
     {
       "@type": "Product",
-      "@id": `${site}/product/${item.slug}/#product`,
+      "@id": `${site}/product/${item.slug}#product`,
       "name": item.name,
       "sku": item.id,
       "mpn": item.id,
-      "url": `${site}/product/${item.slug}/`,
+      "url": `${site}/product/${item.slug}`,
       "category": item.category,
       "material": item.specs[0] || "Solid wood",
       "description": item.description,
@@ -78,7 +77,7 @@ const productSchema = {
       },
       "offers": {
         "@type": "Offer",
-        "url": `${site}/product/${item.slug}/`,
+        "url": `${site}/product/${item.slug}`,
         "priceCurrency": "USD",
         "price": item.price,
         "priceValidUntil": priceValidUntil,
@@ -213,11 +212,11 @@ const relatedItems = itemsData
           {relatedItems.map(rel => (
             <li>
               <article class="mini-card">
-                <a href={`/product/${rel.slug}/`} class="mini-img">
+                <a href={`/product/${rel.slug}`} class="mini-img">
                   <img src={rel.image} alt={rel.name} loading="lazy" />
                 </a>
                 <div class="mini-info">
-                  <h4><a href={`/product/${rel.slug}/`}>{rel.name}</a></h4>
+                  <h4><a href={`/product/${rel.slug}`}>{rel.name}</a></h4>
                   <p class="mini-price">{rel.formattedPrice} · <span class="mini-status">{rel.availability}</span></p>
                 </div>
               </article>

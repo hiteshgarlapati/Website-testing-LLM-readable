@@ -1,51 +1,83 @@
 # Oakline Furniture
 
-> An industrial-standard, AI-crawlable e-commerce platform built for a small-batch handcrafted furniture studio in Grand Rapids, Michigan.
+AI-crawlable static furniture catalogue (Astro). Built for LLM / search-agent readability testing.
 
-## Overview
+## Stack
 
-This codebase follows modern engineering practices and is architected to deliver optimal user interfaces alongside seamless automated indexing for artificial intelligence (AI) crawlers and large language models (LLMs).
+- **Astro 7** static site (`frontend/`)
+- Machine feeds: `/llms.txt`, `/products.json`, `/robots.txt`, `/sitemap.xml`
+- Schema.org JSON-LD on every page
+- Production image: **Node 22 build** → **Nginx** (`Dockerfile`)
 
-## Architecture & Directory Layout
+## Prerequisites
 
-The repository is structured as a clean multi-workspace environment:
+- Node.js **22+**
+- Docker (optional, for container deploy)
 
+## Local development
+
+```bash
+cd frontend
+npm install
+npm run dev
 ```
-├── design-mockups/   # Archived Omelette UI prototypes and design canvas assets
-├── frontend/         # Primary production web application built with Astro
-│   ├── public/       # Static assets, robots.txt, llms.txt, and sitemap.xml
-│   ├── src/          # Modular component design, schemas, and layouts
-│   └── dist/         # Compiled static bundle ready for global CDNs
-├── static/           # Standalone vanilla HTML static mirror/backup
-└── package.json      # Root orchestration scripts
+
+Open http://localhost:4321
+
+## Production build (static files)
+
+Set your public domain first (required for absolute image/JSON-LD URLs):
+
+```bash
+# repo root
+cp .env.example .env
+# edit SITE_URL=https://your-real-domain.com
+
+cd frontend
+cp .env.example .env   # or symlink / reuse the same SITE_URL
+# edit SITE_URL to match
+
+npm ci
+npm run build
 ```
 
-## AI Crawlability & SEO Specifications
+Upload everything in `frontend/dist/` to your host (`public_html` on GoDaddy). See [GODADDY.md](./GODADDY.md).
 
-This platform implements comprehensive standards to ensure immediate transparency and accurate indexing by AI extraction engines (such as GPTBot, ClaudeBot, PerplexityBot, and Google-Extended):
-- **`llms.txt`**: Located in `/public/llms.txt`, providing structured Markdown contextual data specifically formatted for language models and generative search engines.
-- **JSON-LD Structured Schema**: All pages incorporate rich Schema.org definitions (`@type: FurnitureStore`, `ItemList`, and `Product`), embedding explicit pricing, stock availability, and physical dimensional metadata.
-- **Semantic HTML & Clean Identifiers**: All interactive and structural elements carry descriptive attributes and deterministic IDs.
+## Production with Docker
 
-## Getting Started
+Run these commands from the **repository root** (not from `frontend/`):
 
-### Prerequisites
-- Node.js (v18+ recommended)
-- Python 3+ (optional, for standalone zero-dependency static serving)
+```bash
+cd Website-testing-LLM-readable
+cp .env.example .env
+# set SITE_URL=https://your-real-domain.com
 
-### Quick Commands (From Repository Root)
+docker compose up -d --build
+# site: http://localhost:8004
+```
 
-| Command | Description |
-|---|---|
-| `npm run dev` | Launches the Astro local development server (`http://localhost:4321`) |
-| `npm run build` | Compiles the optimized production deployment bundle in `frontend/dist` |
-| `npm run preview` | Previews the production bundle using Astro preview |
-| `npm run serve-dist` | Starts a persistent lightweight local HTTP server on port 8080 hosting `frontend/dist` |
-| `npm run serve-static` | Serves the standalone vanilla HTML backup version on port 8080 |
+Or:
 
-## Production Deployment
+```bash
+docker build --build-arg SITE_URL=https://your-real-domain.com -t oakline-furniture:production .
+docker run --rm -p 8004:80 oakline-furniture:production
+```
 
-The project builds to a fully static output bundle (`frontend/dist`), making it compatible with any static site hosting provider, edge CDN, or object storage bucket (Vercel, Netlify, Cloudflare Pages, AWS S3 / CloudFront, or GitHub Pages). Simply configure your CI/CD workflow to execute `npm run build`.
+`SITE_URL` is a **build arg** — it is compiled into the static files. Changing it later requires a rebuild.
+
+## AI readability surfaces
+
+| Path | Purpose |
+|------|---------|
+| `/llms.txt` | Plain-text catalogue for LLMs (includes absolute image URLs) |
+| `/products.json` | Structured product API (absolute `image` URLs) |
+| `/robots.txt` | Allows major AI crawlers |
+| `/sitemap.xml` | Page index |
+| JSON-LD | `FurnitureStore`, `ItemList`, `Product`, `FAQPage` |
+
+## Catalogue edits
+
+Edit `frontend/src/data/items.json`, replace images under `frontend/public/images/`, then rebuild (and rebuild the Docker image if you use containers).
 
 ## License
 

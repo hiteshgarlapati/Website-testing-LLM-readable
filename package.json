@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Solid-wood furniture ecommerce application made in Grand Rapids, Michigan. Optimized for AI crawlers and modern production deployments.",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "workspaces": [
     "frontend"
   ],
@@ -16,7 +19,10 @@
     "build": "cd frontend && npm run build",
     "preview": "cd frontend && npm run preview",
     "serve-static": "python -m http.server 8080 --directory static",
-    "serve-dist": "python -m http.server 8080 --directory frontend/dist"
+    "serve-dist": "python -m http.server 8080 --directory frontend/dist",
+    "docker:build": "docker build --build-arg SITE_URL=${SITE_URL:-https://oaklinefurniture.example} -t oakline-furniture:production .",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down"
   },
   "keywords": [
     "astro",

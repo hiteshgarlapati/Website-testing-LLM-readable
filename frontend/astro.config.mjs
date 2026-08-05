@@ -14,6 +14,12 @@ const SITE_URL = env.SITE_URL || 'https://oaklinefurniture.example';
 export default defineConfig({
   output: 'static',
   site: SITE_URL,
+  // Emit /product/slug.html instead of /product/slug/index.html so
+  // Nginx, Apache, and GoDaddy all resolve /product/slug without 404s.
+  build: {
+    format: 'file'
+  },
+  trailingSlash: 'never',
   vite: {
     server: {
       fs: {

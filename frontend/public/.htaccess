@@ -1,0 +1,23 @@
+# GoDaddy / Apache: map clean URLs to Astro's .html files
+# e.g. /product/mill-lounge-chair  ->  /product/mill-lounge-chair.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Don't rewrite real files or directories
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Serve the .html file when it exists
+  RewriteCond %{REQUEST_FILENAME}.html -f
+  RewriteRule ^(.*)$ $1.html [L]
+</IfModule>
+
+# Ensure correct content types for AI crawler feeds
+<IfModule mod_mime.c>
+  AddType application/json .json
+  AddType text/plain .txt
+  AddType application/xml .xml
+</IfModule>
