@@ -1,0 +1,103 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CatalogueRows from '../components/CatalogueRows.astro';
+import itemsData from '../data/items.json';
+import { absoluteUrl, siteOrigin } from '../lib/urls.js';
+import { buildRows } from '../lib/catalogue.js';
+
+const site = siteOrigin(Astro.site);
+const absoluteImage = (img) => absoluteUrl(site, img);
+
+const rows = buildRows(itemsData);
+
+// CollectionPage rather than a second FurnitureStore: this page groups the same
+// products the home page lists, so it must not claim to be another storefront.
+// Only filled slots become Products — open slots are layout, not inventory.
+const browseSchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "@id": `${site}/browse#page`,
+  "name": "Browse the Oakline Furniture catalogue",
+  "description": "All Oakline pieces by category — sofas, chairs, tables and beds, with prices and availability in the page source.",
+  "url": `${site}/browse`,
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Oakline Furniture",
+    "url": `${site}/`
+  },
+  "hasPart": rows.map(row => ({
+    "@type": "ItemList",
+    "@id": `${site}/browse#${row.id}`,
+    "name": row.name,
+    "description": row.subtitle,
+    "numberOfItems": row.filled.length,
+    "itemListElement": row.filled.map((item, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "item": {
+        "@type": "Product",
+        "name": item.name,
+        "sku": item.id,
+        "category": item.category,
+        "description": item.description,
+        "url": `${site}/product/${item.slug}`,
+        "image": absoluteImage(item.image),
+        "material": item.specs[0] || "Solid wood",
+        "brand": { "@type": "Brand", "name": "Oakline" },
+        "offers": {
+          "@type": "Offer",
+          "price": item.price,
+          "priceCurrency": "USD",
+          "availability": item.schemaAvailability,
+          "url": `${site}/product/${item.slug}`
+        }
+      }
+    }))
+  }))
+};
+---
+
+<Layout
+  title="Browse the catalogue — Oakline Furniture, Grand Rapids, Michigan"
+  description="Browse every Oakline piece by category: sofas, chairs, tables and beds. Filterable, with prices and availability in the page source."
+  jsonLd={browseSchema}
+  search={true}
+>
+  <main class="page-container" id="top">
+    <div class="browse-head">
+      <p class="crumb"><a href="/">Home</a> · Browse</p>
+      <h1>Browse the catalogue</h1>
+      <p class="browse-lede">Four categories. Twelve slots are filled today; the rest are reserved for pieces still on the bench. Every row scrolls on its own — use the arrows or drag.</p>
+    </div>
+
+    <CatalogueRows items={itemsData} headingId="browse-h" heading="Products" resetHref="/browse" />
+  </main>
+</Layout>
+
+<style>
+  .browse-head {
+    padding: 44px 0 28px;
+  }
+  .crumb {
+    margin-bottom: 12px;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .browse-head h1 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(38px, 5vw, 58px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .browse-lede {
+    margin-top: 14px;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    max-width: 62ch;
+    text-wrap: pretty;
+  }
+</style>

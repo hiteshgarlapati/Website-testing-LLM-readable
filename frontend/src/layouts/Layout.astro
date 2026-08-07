@@ -6,13 +6,17 @@ interface Props {
   description?: string;
   jsonLd?: object;
   image?: string;
+  search?: boolean;
 }
 
 const {
   title = "Oakline Furniture — Solid-Wood Furniture, Handcrafted in Michigan",
   description = "Solid-wood furniture made in small batches in Grand Rapids, Michigan. Twelve pieces, built to order with solid oak, walnut, maple, and cherry.",
   jsonLd,
-  image = "/images/p1.png"
+  image = "/images/p1.png",
+  // Only pages that render the catalogue get the search box; elsewhere it
+  // would be a control with nothing to filter.
+  search = false
 } = Astro.props;
 
 // Every absolute URL derives from the configured site, so pointing SITE_URL at
@@ -109,10 +113,20 @@ const finalJsonLd = jsonLd ? jsonLd : storeSchema;
         <span class="logo-text">Oakline</span>
       </a>
 
+      {search && (
+        <form role="search" action="/browse" method="get" class="site-search">
+          <span aria-hidden="true">⌕</span>
+          <label for="q" class="visually-hidden">Search the catalogue by name, material or room</label>
+          <input id="q" name="q" type="search" placeholder="Search the catalogue — “oak table”, “sofa”, “under $500”" autocomplete="off" />
+          <button type="submit">Search</button>
+        </form>
+      )}
+
       <nav aria-label="Main navigation" class="nav-actions">
-        <a href="/#catalogue" class="btn-pill">Catalogue</a>
+        <a href="/browse" class="btn-pill">Browse all</a>
         <a href="/#about" class="btn-pill">About</a>
-        <a href="/llms.txt" target="_blank" rel="noopener" class="btn-pill btn-ai-pill" title="AI/LLM readable text format">🤖 LLM Text</a>
+        <a href="/llms.txt" target="_blank" rel="noopener" class="btn-pill btn-ai-pill" title="AI/LLM readable text format">llms.txt</a>
+        <a href="/products.json" target="_blank" rel="noopener" class="btn-pill btn-ai-pill" title="Structured product JSON">products.json</a>
       </nav>
     </div>
   </header>
@@ -121,18 +135,31 @@ const finalJsonLd = jsonLd ? jsonLd : storeSchema;
 
   <footer>
     <div class="footer-inner">
-      <div>
-        <p>© 2026 Oakline Furniture · 418 Wealthy Street SE, Grand Rapids, MI 49503</p>
-        <p style="margin-top:4px; font-size:13px; color:#7C736A;">Pre-rendered HTML static pages optimized for web crawlers &amp; AI agents.</p>
+      <div class="footer-col">
+        <h2>Visit or write</h2>
+        <ul>
+          <li>418 Wealthy Street SE<br />Grand Rapids, MI 49503</li>
+          <li>Tuesday–Saturday, 10am–6pm</li>
+          <li><a href="tel:+16165550142">(616) 555-0142</a></li>
+          <li><a href="mailto:shop@oaklinefurniture.example">shop@oaklinefurniture.example</a></li>
+        </ul>
       </div>
-      <div class="footer-links">
-        <a href="/#catalogue">Catalogue</a>
-        <a href="/#about">About Us</a>
-        <a href="/products.json" target="_blank">JSON Data</a>
-        <a href="/llms.txt" target="_blank">llms.txt</a>
-        <a href="mailto:shop@oaklinefurniture.example">Contact</a>
+      <div class="footer-col" style="max-width:38ch">
+        <h2>Delivery</h2>
+        <p>Free delivery and assembly within 90 miles. Flat-rate $180 crating anywhere else in the lower 48. Repairs on our own work are free for the first ten years.</p>
+      </div>
+      <div class="footer-col">
+        <h2>Pages</h2>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/browse">Browse all</a></li>
+          <li><a href="/#about">About us</a></li>
+          <li><a href="/llms.txt">llms.txt</a></li>
+          <li><a href="/products.json">products.json</a></li>
+        </ul>
       </div>
     </div>
+    <div class="footer-legal">© 2026 Oakline Furniture · Grand Rapids, Michigan · Pre-rendered HTML for web crawlers and AI agents.</div>
   </footer>
 </body>
 </html>

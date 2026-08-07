@@ -1,0 +1,225 @@
+---
+import ProductCard from './ProductCard.astro';
+import SlotCard from './SlotCard.astro';
+import { buildRows, slotTotals } from '../lib/catalogue.js';
+
+export interface Props {
+  items: any[];
+  headingId?: string;
+  heading?: string;
+  resetHref?: string;
+}
+
+const { items, headingId = 'cat-h', heading = 'The catalogue', resetHref = '/' } = Astro.props;
+
+const rows = buildRows(items);
+const totals = slotTotals(rows);
+---
+
+<div class="browse-grid">
+  <aside class="filter-rail" aria-labelledby="filters-h">
+    <div class="filter-card">
+      <button type="button" id="filters-toggle" aria-expanded="true" aria-controls="filters-body" class="filter-toggle">
+        <span id="filters-h">Filter</span>
+        <span aria-hidden="true">▾</span>
+      </button>
+      <div id="filters-body" class="filter-body">
+        <h2 class="filter-heading">Category</h2>
+        <ul>
+          {rows.map(row => (
+            <li>
+              <a href={`#${row.id}`} data-filter={row.id} class="filter-link">
+                {row.name}<span class="count">{row.total}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <h2 class="filter-heading spaced">Availability</h2>
+        <ul>
+          <li><label class="filter-check"><input type="checkbox" data-avail="in stock" /> In stock</label></li>
+          <li><label class="filter-check"><input type="checkbox" data-avail="made to order" /> Made to order</label></li>
+          <li><label class="filter-check"><input type="checkbox" id="hide-empty" /> Hide open slots</label></li>
+        </ul>
+
+        <p class="filter-reset"><a href={resetHref}>Reset filters</a></p>
+      </div>
+    </div>
+  </aside>
+
+  <div id="products">
+    <div class="products-head">
+      <h2 id={headingId} class="section-title">{heading}</h2>
+      <p aria-live="polite" class="slot-count" data-default-label={`${totals.slots} slots across four categories · ${totals.filled} filled`}>
+        {totals.slots} slots across four categories · {totals.filled} filled
+      </p>
+    </div>
+
+    {rows.map(row => (
+      <section id={row.id} data-row={row.id} aria-labelledby={`${row.id}-h`} class="category-row">
+        <div class="row-head">
+          <div class="row-head-left">
+            <h3 id={`${row.id}-h`}>{row.name}</h3>
+            <p class="row-subtitle">{row.subtitle}</p>
+          </div>
+          <p class="row-filled">{row.filled.length} of {row.total} slots filled</p>
+        </div>
+
+        <div class="carousel" data-carousel>
+          <button type="button" data-scroll="prev" aria-label={`Scroll ${row.name} left`} aria-controls={`${row.id}-track`} hidden class="scroll-btn prev">‹</button>
+
+          <ul id={`${row.id}-track`} class="track" data-track>
+            {row.filled.map(item => (
+              <li data-slot={item.id} data-search={item.searchText}>
+                <ProductCard item={item} />
+              </li>
+            ))}
+            {row.open.map(open => (
+              <li data-slot={open.slot} data-empty>
+                <SlotCard slot={open.slot} number={open.number} />
+              </li>
+            ))}
+          </ul>
+
+          <button type="button" data-scroll="next" aria-label={`Scroll ${row.name} right`} aria-controls={`${row.id}-track`} hidden class="scroll-btn next">›</button>
+        </div>
+      </section>
+    ))}
+
+    <p id="no-match" hidden class="no-match">
+      Nothing matches those filters. <a href={resetHref}>Reset</a>, or
+      <a href="mailto:shop@oaklinefurniture.example">email the shop</a> — we take custom commissions.
+    </p>
+  </div>
+</div>
+
+<script is:inline>
+/* Progressive enhancement only. Every slot is already in the HTML above; this
+   adds carousel arrows, gentle auto-advance, and filtering that hides nodes
+   already in the document. With JS off the rows still scroll natively and all
+   content stays readable, which is what crawlers see. */
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function tween(el, delta) {
+    var max = el.scrollWidth - el.clientWidth;
+    var from = el.scrollLeft;
+    var to = Math.max(0, Math.min(max, from + delta));
+    if (Math.abs(to - from) < 1) return;
+    if (el.__raf) cancelAnimationFrame(el.__raf);
+    if (reduce) { el.scrollLeft = to; return; }
+    var start = performance.now(), dur = 480;
+    function step(now) {
+      var p = Math.min(1, (now - start) / dur);
+      var e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      el.scrollLeft = from + (to - from) * e;
+      if (p < 1) el.__raf = requestAnimationFrame(step);
+    }
+    el.__raf = requestAnimationFrame(step);
+  }
+
+  document.querySelectorAll('[data-carousel]').forEach(function (wrap) {
+    var track = wrap.querySelector('[data-track]');
+    var prev = wrap.querySelector('[data-scroll="prev"]');
+    var next = wrap.querySelector('[data-scroll="next"]');
+    var step = function () { return track.clientWidth * 0.8; };
+
+    function sync() {
+      var max = track.scrollWidth - track.clientWidth - 2;
+      prev.hidden = track.scrollLeft <= 2;
+      next.hidden = track.scrollLeft >= max || max <= 0;
+    }
+    prev.addEventListener('click', function () { tween(track, -step()); });
+    next.addEventListener('click', function () { tween(track, step()); });
+    track.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+
+    if (reduce) return;
+    var paused = false, dir = 1;
+    ['pointerenter', 'focusin', 'pointerdown'].forEach(function (e) {
+      wrap.addEventListener(e, function () { paused = true; });
+    });
+    ['pointerleave', 'focusout'].forEach(function (e) {
+      wrap.addEventListener(e, function () { paused = false; });
+    });
+    setInterval(function () {
+      if (paused || document.hidden || !track.clientWidth) return;
+      var max = track.scrollWidth - track.clientWidth;
+      if (max <= 8) return;
+      if (track.scrollLeft >= max - 8) dir = -1;
+      else if (track.scrollLeft <= 8) dir = 1;
+      tween(track, dir * 286);
+    }, 4200);
+  });
+
+  var toggle = document.getElementById('filters-toggle');
+  var body = document.getElementById('filters-body');
+  if (toggle && body) {
+    toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      body.hidden = open;
+    });
+  }
+
+  var rows = document.querySelectorAll('section[data-row]');
+  var cats = document.querySelectorAll('[data-filter]');
+  var avail = document.querySelectorAll('[data-avail]');
+  var hideEmpty = document.getElementById('hide-empty');
+  var noMatch = document.getElementById('no-match');
+  var count = document.querySelector('#products p[aria-live]');
+  var q = document.getElementById('q');
+  var active = {};
+
+  function apply() {
+    var wantCats = Object.keys(active).filter(function (k) { return active[k]; });
+    var wantAvail = [];
+    avail.forEach(function (a) { if (a.checked) wantAvail.push(a.getAttribute('data-avail')); });
+    var term = ((q && q.value) || '').trim().toLowerCase();
+    var shown = 0, total = 0;
+
+    rows.forEach(function (row) {
+      var rowOn = !wantCats.length || wantCats.indexOf(row.getAttribute('data-row')) !== -1;
+      var rowShown = 0;
+      row.querySelectorAll('li[data-slot]').forEach(function (li) {
+        total++;
+        var empty = li.hasAttribute('data-empty');
+        var text = ((li.getAttribute('data-search') || '') + ' ' + li.textContent).toLowerCase();
+        var hit = rowOn;
+        if (hit && hideEmpty && hideEmpty.checked && empty) hit = false;
+        if (hit && wantAvail.length) hit = !empty && wantAvail.some(function (a) { return text.indexOf(a) !== -1; });
+        if (hit && term) hit = text.indexOf(term) !== -1;
+        li.hidden = !hit;
+        if (hit) rowShown++;
+      });
+      row.hidden = rowShown === 0;
+      shown += rowShown;
+    });
+
+    if (noMatch) noMatch.hidden = shown !== 0;
+    if (count) {
+      count.textContent = shown === total ? count.getAttribute('data-default-label')
+        : shown === 1 ? '1 slot matches' : shown + ' slots match';
+    }
+  }
+
+  cats.forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      if (e.metaKey || e.ctrlKey) return;
+      var key = a.getAttribute('data-filter');
+      active[key] = !active[key];
+      a.classList.toggle('is-on', active[key]);
+      apply();
+    });
+  });
+  avail.forEach(function (a) { a.addEventListener('change', apply); });
+  if (hideEmpty) hideEmpty.addEventListener('change', apply);
+  if (q) {
+    q.addEventListener('input', apply);
+    if (q.form) q.form.addEventListener('submit', function (e) { e.preventDefault(); apply(); });
+    var pre = new URLSearchParams(location.search).get('q');
+    if (pre) { q.value = pre; apply(); }
+  }
+})();
+</script>

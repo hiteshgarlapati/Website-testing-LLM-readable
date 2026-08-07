@@ -1,27 +1,17 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Hero from '../components/Hero.astro';
-import ProductCard from '../components/ProductCard.astro';
+import CatalogueRows from '../components/CatalogueRows.astro';
 import AboutSection from '../components/AboutSection.astro';
 import itemsData from '../data/items.json';
 import { absoluteUrl, siteOrigin } from '../lib/urls.js';
+import { buildRows } from '../lib/catalogue.js';
 
 const site = siteOrigin(Astro.site);
 const absoluteImage = (img) => absoluteUrl(site, img);
 
-// Define the categories with their subtitles exactly as in Mockup (2)
-const categories = [
-  { id: 'beds', name: 'Beds', subtitle: 'Slatted platforms in maple, oak and ash — no box spring needed' },
-  { id: 'chairs', name: 'Chairs', subtitle: 'Sold singly, so a set can be built one chair at a time' },
-  { id: 'tables', name: 'Tables', subtitle: 'Hardwax-oiled tops that can be spot-repaired at home' },
-  { id: 'sofas', name: 'Sofas', subtitle: 'Oak frames with washable covers you can re-order on their own' }
-];
-
-// Group items by categoryId
-const groupedItems = categories.map(cat => ({
-  ...cat,
-  items: itemsData.filter(item => item.categoryId === cat.id)
-}));
+// Only real pieces reach the structured data; the open slots the catalogue
+// renders are presentation and must never be described as products.
+const groupedItems = buildRows(itemsData).map(row => ({ ...row, items: row.filled }));
 
 // Build comprehensive Schema.org JSON-LD for AI crawlers & LLM reading
 const catalogueSchema = {
@@ -134,228 +124,57 @@ const catalogueSchema = {
 };
 ---
 
-<Layout title="Oakline Furniture — Beds, Chairs, Tables & Sofas" jsonLd={catalogueSchema}>
+
+<Layout title="Oakline Furniture — beds, chairs, tables and sofas made in Grand Rapids, Michigan" description="Oakline Furniture is a two-person shop in Grand Rapids, Michigan making twelve solid-wood pieces across four categories: beds, chairs, tables and sofas. $340–$3,240, in stock or made to order in 4–6 weeks." jsonLd={catalogueSchema} search={true}>
   <main class="page-container" id="top">
-    <!-- Hero & Jump Nav -->
-    <Hero />
-
-    <!-- Catalogue Section -->
-    <section id="catalogue" aria-labelledby="cat-h" class="catalogue-section">
-      <div class="catalogue-topbar">
-        <div>
-          <h2 id="cat-h" class="section-title">The catalogue</h2>
-        </div>
-        <div class="search-box-wrapper">
-          <form role="search" class="search-form" id="search-form" onsubmit="return false;">
-            <span aria-hidden="true" class="search-icon">⌕</span>
-            <label for="q" class="sr-only">Search the catalogue by name, material or room</label>
-            <input 
-              id="q" 
-              name="q" 
-              type="search" 
-              placeholder="Search 12 pieces — “oak”, “sofa”, “under $500”" 
-              autocomplete="off" 
-              class="search-input" 
-            />
-          </form>
-          <p aria-live="polite" id="count-label" class="count-label">12 pieces in four categories</p>
-        </div>
+    <section aria-labelledby="intro-h" class="intro-grid">
+      <div>
+        <p class="eyebrow">Grand Rapids, Michigan · Est. 2014</p>
+        <h1 id="intro-h">Beds, chairs, tables and sofas. Twelve pieces, nothing else.</h1>
       </div>
-
-      <!-- Categories & Products List -->
-      <div id="catalogue-rows">
-        {groupedItems.map(group => (
-          <section id={group.id} data-row={group.id} aria-labelledby={`${group.id}-h`} class="category-group">
-            <div class="category-header">
-              <h3 id={`${group.id}-h`} class="category-title">{group.name}</h3>
-              <p class="category-subtitle">{group.subtitle}</p>
-            </div>
-            
-            <ul class="products-grid">
-              {group.items.map(item => (
-                <li data-cat={group.id} data-search={`${item.searchTerms} ${item.name} ${item.description}`.toLowerCase()}>
-                  <ProductCard item={item} />
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
-      </div>
-
-      <p id="empty-state" class="empty-state" style="display: none;">
-        No piece matches that search. Try “oak”, “sofa”, or <a href="#about">email the shop</a> — we take custom commissions.
-      </p>
+      <p class="intro-lede">We keep one small catalogue and build every order by hand in our shop on Wealthy Street. Everything on this page is in stock or made to order in four to six weeks, shipped flat-packed or delivered fully assembled within Michigan.</p>
     </section>
 
-    <!-- About Us & Admin Portal -->
+    <section id="catalogue" aria-labelledby="cat-h" class="catalogue-section">
+      <CatalogueRows items={itemsData} headingId="cat-h" heading="The catalogue" resetHref="/" />
+    </section>
+
     <AboutSection />
   </main>
-
-  <!-- Progressive Enhancement Search Script (Runs client-side without altering static HTML for scrapers) -->
-  <script is:inline>
-    document.addEventListener('DOMContentLoaded', () => {
-      const input = document.getElementById('q');
-      const countLabel = document.getElementById('count-label');
-      const emptyState = document.getElementById('empty-state');
-      const rows = document.querySelectorAll('section[data-row]');
-      
-      if (!input) return;
-
-      function updateFilter() {
-        const q = input.value.trim().toLowerCase();
-        let totalShown = 0;
-
-        rows.forEach(row => {
-          let rowShown = 0;
-          const items = row.querySelectorAll('li[data-cat]');
-          items.forEach(li => {
-            const hay = li.getAttribute('data-search') || '';
-            const isHit = !q || hay.indexOf(q) !== -1;
-            li.style.display = isHit ? '' : 'none';
-            if (isHit) rowShown++;
-          });
-          row.style.display = rowShown ? '' : 'none';
-          totalShown += rowShown;
-        });
-
-        if (emptyState) {
-          emptyState.style.display = totalShown ? 'none' : 'block';
-        }
-        if (countLabel) {
-          if (!q || totalShown === 12) {
-            countLabel.textContent = "12 pieces in four categories";
-          } else if (totalShown === 1) {
-            countLabel.textContent = "1 piece matches";
-          } else {
-            countLabel.textContent = `${totalShown} pieces match`;
-          }
-        }
-      }
-
-      input.addEventListener('input', updateFilter);
-    });
-  </script>
 </Layout>
 
 <style>
-  .page-container {
-    max-width: 1240px;
-    margin: 0 auto;
-    padding: 0 28px;
+  .intro-grid {
+    padding: 64px 0 40px;
+    border-bottom: 1px solid var(--border-subtle);
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 56px;
+    align-items: end;
   }
-
-  /* Catalogue Header & Search */
+  .eyebrow {
+    margin-bottom: 18px;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .intro-grid h1 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(44px, 6vw, 78px);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .intro-lede {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    text-wrap: pretty;
+    max-width: 44ch;
+  }
   .catalogue-section {
     padding: 44px 0 0;
-  }
-  .catalogue-topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-  }
-  .section-title {
-    font-family: var(--font-serif);
-    font-size: 36px;
-    font-weight: 400;
-    letter-spacing: -0.01em;
-  }
-  .search-box-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-    flex: 1;
-    justify-content: flex-end;
-  }
-  .search-form {
-    flex: 1 1 320px;
-    max-width: 440px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #FFFDFA;
-    border: 1px solid rgba(28, 26, 23, 0.22);
-    border-radius: 999px;
-    padding: 0 18px;
-    height: 48px;
-    transition: border-color 0.2s;
-  }
-  .search-form:focus-within {
-    border-color: var(--accent-terracotta);
-  }
-  .search-icon {
-    font-size: 18px;
-    color: var(--text-subtle);
-  }
-  .search-input {
-    flex: 1;
-    border: 0;
-    outline: 0;
-    background: transparent;
-    font: 400 15px/1.2 var(--font-sans);
-    color: var(--text-dark);
-    min-width: 0;
-  }
-  .count-label {
-    font-size: 14px;
-    color: var(--text-subtle);
-    white-space: nowrap;
-  }
-
-  /* Category Rows */
-  .category-group {
-    scroll-margin-top: 110px;
-    padding: 48px 0 0;
-  }
-  .category-header {
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-    padding: 0 0 18px;
-    border-bottom: 1px solid rgba(28, 26, 23, 0.14);
-    flex-wrap: wrap;
-  }
-  .category-title {
-    font-family: var(--font-serif);
-    font-weight: 400;
-    font-size: 28px;
-  }
-  .category-subtitle {
-    font-size: 14px;
-    color: var(--text-subtle);
-  }
-
-  /* Product Cards Grid */
-  .products-grid {
-    list-style: none;
-    margin: 24px 0 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 36px;
-  }
-
-  .empty-state {
-    margin: 44px 0 0;
-    padding: 36px;
-    text-align: center;
-    border: 1px dashed rgba(28, 26, 23, 0.28);
-    border-radius: 6px;
-    font-size: 16px;
-    color: var(--text-muted);
-  }
-
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
   }
 </style>

@@ -52,6 +52,7 @@ export async function GET(context) {
 - **Delivery Policy:** Free delivery and assembly within 90 miles. Flat-rate $180 crating anywhere else in the lower 48 US states.
 
 ## Machine-Readable Endpoints
+- **Browse all products:** ${site}/browse
 - **Product JSON API:** ${site}/products.json
 - **Sitemap:** ${site}/sitemap.xml
 - **Structured data:** Schema.org JSON-LD (Product, Offer, FurnitureStore, FAQPage) is embedded in every page.

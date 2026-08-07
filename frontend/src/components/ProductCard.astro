@@ -1,12 +1,9 @@
 ---
 export interface Props {
   item: {
-    id: string;
     name: string;
     slug: string;
     category: string;
-    categoryId: string;
-    price: number;
     formattedPrice: string;
     availability: string;
     description: string;
@@ -16,113 +13,104 @@ export interface Props {
 }
 
 const { item } = Astro.props;
+
+// Two specs keep the card the same height as the open-slot placeholder.
+const summarySpecs = item.specs.slice(0, 2).join(' · ');
+const inStock = item.availability.includes('In stock');
 ---
 
-<article class="product-card">
-  <a href={`/product/${item.slug}`} class="image-wrapper" aria-label={`View details for ${item.name}`}>
+<article class="card">
+  <a href={`/product/${item.slug}`} class="card-image" aria-label={`View details for ${item.name}`}>
     <img src={item.image} alt={item.name} loading="lazy" />
   </a>
-  <h4 class="product-name">
-    <a href={`/product/${item.slug}`}>{item.name}</a>
-  </h4>
-  <p class="product-description">{item.description}</p>
-  <ul class="product-specs" aria-label="Specifications">
-    {item.specs.map(spec => (
-      <li>{spec}</li>
-    ))}
-  </ul>
-  <div class="product-footer">
-    <strong class="price">{item.formattedPrice}</strong>
-    <span class:list={['badge', { 'badge-stock': item.availability.includes('In stock'), 'badge-order': !item.availability.includes('In stock') }]}>
-      {item.availability}
-    </span>
+  <div class="card-body">
+    <h4><a href={`/product/${item.slug}`}>{item.name}</a></h4>
+    <p class="card-desc">{item.description}</p>
+    <p class="card-specs">{summarySpecs}</p>
+    <p class="card-foot">
+      <strong>{item.formattedPrice}</strong>
+      <span class:list={['status', inStock ? 'in-stock' : 'to-order']}>{item.availability}</span>
+    </p>
   </div>
 </article>
 
 <style>
-  .product-card {
+  .card {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
   }
-  .image-wrapper {
-    position: relative;
+  .card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+  .card-image {
     width: 100%;
     aspect-ratio: 4/3;
-    background: #EAE1D6;
-    border-radius: 6px;
     overflow: hidden;
+    background: #EAE1D6;
     display: block;
   }
-  .image-wrapper img {
+  .card-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .image-wrapper:hover img {
+  .card-image:hover img {
     transform: scale(1.04);
   }
-  .product-name {
-    margin: 16px 0 6px;
+  .card-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+  .card-body h4 {
     font-family: var(--font-serif);
     font-weight: 400;
-    font-size: 24px;
+    font-size: 20px;
   }
-  .product-name a {
+  .card-body h4 a {
     color: var(--text-dark);
-    text-decoration: none;
   }
-  .product-name a:hover {
+  .card-body h4 a:hover {
     color: var(--accent-terracotta);
   }
-  .product-description {
-    font-size: 15px;
-    line-height: 1.55;
+  .card-desc {
+    font-size: 14px;
+    line-height: 1.5;
     color: var(--text-muted);
-    margin: 0 0 12px;
-    flex-grow: 1;
+    text-wrap: pretty;
   }
-  .product-specs {
-    list-style: none;
-    margin: 0 0 16px;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 14px;
-    font-size: 13px;
+  .card-specs {
+    font-size: 12px;
     color: var(--text-subtle);
   }
-  .product-specs li::after {
-    content: "·";
-    margin-left: 14px;
-    color: #B5ACA2;
-  }
-  .product-specs li:last-child::after {
-    content: "";
-    margin-left: 0;
-  }
-  .product-footer {
+  .card-foot {
+    margin: auto 0 0;
     display: flex;
+    flex-wrap: wrap;
     align-items: baseline;
-    justify-content: space-between;
-    gap: 10px;
-    border-top: 1px dashed rgba(28, 26, 23, 0.1);
-    padding-top: 12px;
+    gap: 4px 10px;
+    padding-top: 6px;
   }
-  .price {
-    font-size: 18px;
+  .card-foot strong {
+    font-size: 16px;
     font-weight: 600;
-    color: var(--text-dark);
   }
-  .badge {
-    font-size: 13px;
-    font-weight: 500;
+  .status {
+    font-size: 12px;
+    white-space: nowrap;
   }
-  .badge-stock {
-    color: var(--accent-green);
-  }
-  .badge-order {
-    color: var(--accent-terracotta);
-  }
+  .in-stock { color: var(--accent-green); }
+  .to-order { color: var(--accent-terracotta); }
 </style>

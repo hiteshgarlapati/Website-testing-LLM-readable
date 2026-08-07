@@ -1,0 +1,64 @@
+---
+export interface Props {
+  slot: string;
+  number: number;
+}
+
+const { slot, number } = Astro.props;
+---
+
+<article class="slot">
+  <div class="slot-image">
+    <span aria-hidden="true">{String(number).padStart(2, '0')}</span>
+  </div>
+  <div class="slot-body">
+    <h4>Slot {slot}</h4>
+    <p>Open catalogue slot. Add a piece in <code>items.json</code>.</p>
+  </div>
+</article>
+
+<style>
+  .slot {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: rgba(255, 253, 250, 0.5);
+    border: 1px dashed rgba(28, 26, 23, 0.24);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .slot-image {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: rgba(28, 26, 23, 0.03);
+    display: grid;
+    place-items: center;
+  }
+  .slot-image span {
+    font-family: var(--font-serif);
+    font-size: 28px;
+    color: var(--text-faint);
+  }
+  .slot-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+  }
+  .slot-body h4 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 20px;
+    color: var(--text-subtle);
+  }
+  .slot-body p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-subtle);
+    text-wrap: pretty;
+  }
+  code {
+    font-size: 13px;
+  }
+</style>
