@@ -5,19 +5,23 @@ services:
       dockerfile: Dockerfile
       target: production
       args:
-        SITE_URL: ${SITE_URL:-https://oaklinefurniture.example}
+        # Baked into HTML/JSON-LD at image build time — rebuild after changing SITE_URL
+        SITE_URL: ${SITE_URL:-https://catalog360.4sightai.com}
     image: oakline-furniture:production
     container_name: oakline-furniture-app
     restart: unless-stopped
+    env_file:
+      - .env
     ports:
       - "${PORT:-8004}:4321"
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: 4321
-      SITE_URL: ${SITE_URL:-https://oaklinefurniture.example}
+      SITE_URL: ${SITE_URL:-https://catalog360.4sightai.com}
       ADMIN_SECRET: ${ADMIN_SECRET:-}
       DATA_DIR: /app/data
+      SEED_DIR: /app/seed
     volumes:
       - catalogue_data:/app/data
     networks:

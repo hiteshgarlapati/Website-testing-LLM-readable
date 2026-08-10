@@ -64,6 +64,18 @@ SITE_URL=... ADMIN_SECRET=... DATA_DIR=... npm run start
 
 Listen on `HOST` / `PORT` (default `0.0.0.0:4321`).
 
+### Reverse proxy (HTTPS)
+
+If the site is behind Nginx, Caddy, or a load balancer, the proxy must forward the public host and scheme so admin uploads pass Astro’s origin check:
+
+```nginx
+proxy_set_header Host $host;
+proxy_set_header X-Forwarded-Proto $scheme;
+proxy_set_header X-Forwarded-Host $host;
+```
+
+Rebuild the image after changing `SITE_URL` so `security.allowedDomains` matches your domain. Example proxy config: `docker/nginx-reverse-proxy.conf.example`.
+
 ## Admin / Excel import
 
 1. Open `/admin`, enter `ADMIN_SECRET` if configured.

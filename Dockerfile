@@ -31,6 +31,7 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=4321
 ENV DATA_DIR=/app/data
+ENV SEED_DIR=/app/seed
 
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/frontend/package.json ./package.json
@@ -46,12 +47,12 @@ VOLUME ["/app/data"]
 EXPOSE 4321
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-  CMD wget -qO- "http://127.0.0.1:${PORT}/" >/dev/null || exit 1
+  CMD wget -qO- http://127.0.0.1:4321/ >/dev/null || exit 1
 
 ENTRYPOINT ["/sbin/tini", "--", "/entrypoint.sh"]
 CMD ["node", "dist/server/entry.mjs"]
 
-# Stage 3: Static-only Nginx (no admin — for plain static hosts)
+# Stage 3: Static assets only (no SSR pages / no admin). Use target `production` for the full app.
 FROM nginx:1.27-alpine AS static
 
 RUN rm -rf /usr/share/nginx/html/*
@@ -59,7 +60,7 @@ RUN rm -rf /usr/share/nginx/html/*
 COPY --from=build /app/frontend/dist/client /usr/share/nginx/html
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 
-RUN test -f /usr/share/nginx/html/index.html
+RUN test -f /usr/share/nginx/html/robots.txt
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

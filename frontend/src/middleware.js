@@ -7,7 +7,8 @@ const MIME = {
   jpeg: 'image/jpeg',
   png: 'image/png',
   webp: 'image/webp',
-  gif: 'image/gif'
+  gif: 'image/gif',
+  svg: 'image/svg+xml'
 };
 
 function securityHeaders(response) {
@@ -36,6 +37,7 @@ export async function onRequest(context, next) {
         })
       );
     }
+    return securityHeaders(new Response('Not found', { status: 404 }));
   }
 
   const response = await next();
