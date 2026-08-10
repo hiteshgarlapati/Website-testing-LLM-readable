@@ -1,10 +1,14 @@
-import itemsData from '../data/items.json';
+import { readItems } from '../lib/itemsStore.js';
 import { absoluteUrl } from '../lib/urls.js';
+import { publishableItems } from '../lib/publishable.js';
 
-// Pure JSON endpoint — prerendered at build time for static hosting (GoDaddy, etc.)
+export const prerender = false;
+
+// Pure JSON endpoint — served at runtime so admin uploads refresh without rebuild.
 // Image fields are absolute so LLM agents can fetch pictures by URL.
 export async function GET(context) {
-  const items = itemsData.map((item) => ({
+  const itemsData = await readItems();
+  const items = publishableItems(itemsData).map((item) => ({
     ...item,
     image: absoluteUrl(context.site, item.image)
   }));

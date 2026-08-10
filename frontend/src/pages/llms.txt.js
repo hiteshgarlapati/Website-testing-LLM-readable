@@ -1,5 +1,8 @@
-import itemsData from '../data/items.json';
+import { readItems } from '../lib/itemsStore.js';
 import { absoluteUrl, siteOrigin } from '../lib/urls.js';
+import { publishableItems } from '../lib/publishable.js';
+
+export const prerender = false;
 
 const CATEGORIES = [
   { id: 'beds', name: 'Beds', subtitle: 'Slatted platforms in maple, oak and ash — no box spring needed' },
@@ -10,7 +13,8 @@ const CATEGORIES = [
 
 export async function GET(context) {
   const site = siteOrigin(context.site);
-  const items = itemsData;
+  const itemsData = await readItems();
+  const items = publishableItems(itemsData);
 
   // Numbering runs across the whole catalogue, not per category, so the list
   // reads the same way the old hand-written file did.

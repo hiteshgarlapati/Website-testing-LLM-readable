@@ -1,4 +1,7 @@
-import itemsData from '../data/items.json';
+import { readItems } from '../lib/itemsStore.js';
+import { publishableItems } from '../lib/publishable.js';
+
+export const prerender = false;
 
 // Falls back to the configured site when a request context has no origin.
 const DEFAULT_SITE = 'https://oaklinefurniture.example';
@@ -13,7 +16,8 @@ const escapeXml = value =>
 
 export async function GET(context) {
   const base = (context.site?.origin ?? DEFAULT_SITE).replace(/\/$/, '');
-  const items = itemsData;
+  const itemsData = await readItems();
+  const items = publishableItems(itemsData);
 
   // Prefer an explicit updatedAt when present; otherwise omit lastmod.
   const lastmodOf = item =>

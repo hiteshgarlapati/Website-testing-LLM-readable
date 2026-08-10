@@ -1,0 +1,302 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { CATEGORIES } from '../lib/catalogue.js';
+import { readItems } from '../lib/itemsStore.js';
+import { publishableItems } from '../lib/publishable.js';
+import { adminSecret, adminAuthRequired } from '../lib/adminAuth.js';
+
+export const prerender = false;
+
+const itemsData = await readItems();
+const liveCatalogue = publishableItems(itemsData);
+
+const counts = Object.fromEntries(
+  CATEGORIES.map(cat => [
+    cat.id,
+    liveCatalogue.filter(item => item.categoryId === cat.id).length
+  ])
+);
+
+const adminSecretConfigured = Boolean(adminSecret());
+const adminLocked = adminAuthRequired() && !adminSecretConfigured;
+---
+
+<Layout
+  title="Catalogue admin — Oakline Furniture"
+  description="Upload Excel workbooks to update each furniture catalogue category."
+  search={false}
+  noindex={true}
+>
+  <main class="page-container admin-page">
+    <div class="admin-head">
+      <p class="crumb"><a href="/">← Back to site</a></p>
+      <h1>Catalogue admin</h1>
+      <p class="admin-lede">
+        Update the live catalogue by uploading an Excel workbook for each category.
+        Products on the <strong>Products</strong> sheet replace everything in that category
+        (other categories stay as they are). Machine-readable feeds (<code>/products.json</code>,
+        <code>/llms.txt</code>, JSON-LD) update as soon as products import successfully.
+      </p>
+      <p class="admin-note">
+        <a href="/templates/catalogue-template.xlsx" download>Download the Excel template</a>
+        · Use the <strong>Products</strong> sheet · Up to 200 rows per upload ·
+        Each row needs a photo in <strong>Image1</strong> (Insert → Pictures → Place in Cell). Rows without a saved image are skipped and never shown on the site.
+      </p>
+    </div>
+
+    {adminLocked && (
+      <p class="admin-locked" role="alert">
+        Production admin is locked until <code>ADMIN_SECRET</code> is set on the server. Set it in your <code>.env</code> or Docker environment, then restart.
+      </p>
+    )}
+
+    {!adminSecretConfigured && !adminLocked && (
+      <p class="admin-note">Local dev: uploads work without a secret. Production requires <code>ADMIN_SECRET</code>.</p>
+    )}
+
+    {adminSecretConfigured && (
+      <div class="admin-secret">
+        <label for="admin-secret">Admin secret</label>
+        <input id="admin-secret" name="secret" type="password" autocomplete="off" placeholder="Required for uploads" />
+      </div>
+    )}
+
+    <div class="admin-grid">
+      {CATEGORIES.map(cat => (
+        <section class="admin-card" aria-labelledby={`upload-${cat.id}`}>
+          <div class="admin-card-head">
+            <h2 id={`upload-${cat.id}`}>{cat.name}</h2>
+            <p>{cat.subtitle}</p>
+            <p class="admin-count">{counts[cat.id]} product{counts[cat.id] === 1 ? '' : 's'} live</p>
+          </div>
+
+          <form class="upload-form" data-category={cat.id}>
+            <label class="file-label">
+              <span>Excel workbook (.xlsx)</span>
+              <input type="file" name="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required disabled={adminLocked} />
+            </label>
+            <button type="submit" class="btn-upload" disabled={adminLocked}>Upload and replace {cat.name.toLowerCase()}</button>
+            <p class="upload-status" role="status" aria-live="polite" hidden></p>
+          </form>
+        </section>
+      ))}
+    </div>
+
+    <aside class="admin-foot">
+      <h2>After uploading</h2>
+      <ol>
+        <li>Successful uploads update the live site immediately (Docker / Node production).</li>
+        <li>Each row needs a photo in <strong>Image1</strong>; rows without images are skipped.</li>
+        <li>Production requires <code>ADMIN_SECRET</code> in the server environment (see root <code>.env.example</code>).</li>
+        <li>Static-only hosts (GoDaddy): import locally, commit data, rebuild — see <code>GODADDY.md</code>.</li>
+      </ol>
+    </aside>
+  </main>
+</Layout>
+
+<style>
+  .admin-page {
+    padding-bottom: 64px;
+  }
+  .admin-head {
+    padding: 44px 0 28px;
+    max-width: 72ch;
+  }
+  .crumb {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  .admin-head h1 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(36px, 5vw, 52px);
+    margin-bottom: 16px;
+  }
+  .admin-lede,
+  .admin-note {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+  .admin-note {
+    margin-top: 12px;
+    font-size: 14px;
+  }
+  .admin-secret {
+    margin-bottom: 28px;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .admin-secret input {
+    padding: 10px 12px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    font: inherit;
+  }
+  .admin-locked {
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    background: rgba(163, 77, 51, 0.08);
+    border: 1px solid rgba(163, 77, 51, 0.35);
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .admin-card {
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 20px;
+    background: var(--bg-card);
+    box-shadow: var(--shadow-sm);
+  }
+  .admin-card-head h2 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 26px;
+    margin-bottom: 8px;
+  }
+  .admin-card-head p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .admin-count {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-subtle);
+  }
+  .upload-form {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .file-label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .file-label input {
+    font: inherit;
+  }
+  .btn-upload {
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 999px;
+    background: var(--text-dark);
+    color: var(--bg-main);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+  }
+  .btn-upload:hover {
+    opacity: 0.9;
+  }
+  .btn-upload:disabled {
+    opacity: 0.55;
+    cursor: wait;
+  }
+  .upload-status {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .upload-status.ok { color: var(--accent-green); }
+  .upload-status.err { color: #b45309; }
+  .admin-foot {
+    margin-top: 48px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border-subtle);
+    max-width: 72ch;
+  }
+  .admin-foot h2 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  .admin-foot ol {
+    padding-left: 1.2rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+</style>
+
+<script is:inline>
+(function () {
+  var secretInput = document.getElementById('admin-secret');
+  document.querySelectorAll('.upload-form').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var category = form.getAttribute('data-category');
+      var status = form.querySelector('.upload-status');
+      var btn = form.querySelector('.btn-upload');
+      var fileInput = form.querySelector('input[type="file"]');
+      var file = fileInput && fileInput.files && fileInput.files[0];
+      if (!file) return;
+
+      status.hidden = false;
+      status.className = 'upload-status';
+      status.textContent = 'Uploading…';
+      btn.disabled = true;
+
+      var body = new FormData();
+      body.append('file', file);
+      if (secretInput && secretInput.value) body.append('secret', secretInput.value);
+
+      fetch('/api/admin/import/' + category, { method: 'POST', body: body })
+        .then(function (res) {
+          return res.text().then(function (text) {
+            var data;
+            try { data = JSON.parse(text); } catch (e) {
+              throw new Error(text.slice(0, 240) || 'Upload failed — is the dev server running?');
+            }
+            return { res: res, data: data };
+          });
+        })
+        .then(function (_ref) {
+          var res = _ref.res;
+          var data = _ref.data;
+          function formatSkipped(skipped) {
+            if (!skipped || !skipped.length) return '';
+            var lines = skipped.slice(0, 10).map(function (s) {
+              return 'Row ' + s.row + (s.name ? ' (' + s.name + ')' : '') + ': ' + s.reason;
+            });
+            if (skipped.length > 10) lines.push('…and ' + (skipped.length - 10) + ' more.');
+            return '\n' + lines.join('\n');
+          }
+          if (!res.ok) {
+            var errMsg = data.error || data.message || 'Upload failed.';
+            errMsg += formatSkipped(data.skipped);
+            throw new Error(errMsg);
+          }
+          status.className = 'upload-status ok';
+          var msg = data.message || 'Updated.';
+          msg += formatSkipped(data.skipped);
+          status.textContent = msg;
+          status.style.whiteSpace = 'pre-wrap';
+          fileInput.value = '';
+          if (data.imported > 0) {
+            setTimeout(function () { window.location.reload(); }, 1200);
+          }
+        })
+        .catch(function (err) {
+          status.className = 'upload-status err';
+          status.textContent = err.message || 'Upload failed.';
+        })
+        .finally(function () { btn.disabled = false; });
+    });
+  });
+})();
+</script>

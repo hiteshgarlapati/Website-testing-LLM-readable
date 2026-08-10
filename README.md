@@ -1,83 +1,89 @@
 # Oakline Furniture
 
-AI-crawlable static furniture catalogue (Astro). Built for LLM / search-agent readability testing.
+AI-crawlable furniture catalogue (Astro) with **Excel admin import**. Built for LLM / search-agent readability testing.
 
 ## Stack
 
-- **Astro 7** static site (`frontend/`)
+- **Astro 7** + **Node adapter** (SSR catalogue + admin API)
 - Machine feeds: `/llms.txt`, `/products.json`, `/robots.txt`, `/sitemap.xml`
 - Schema.org JSON-LD on every page
-- Production image: **Node 22 build** → **Nginx** (`Dockerfile`)
+- **Production (recommended):** Docker → Node 22 + persistent catalogue volume
+- **Static-only (optional):** build and upload HTML — no live admin (see [GODADDY.md](./GODADDY.md))
 
 ## Prerequisites
 
 - Node.js **22+**
-- Docker (optional, for container deploy)
+- Docker (recommended for production with admin)
 
 ## Local development
 
 ```bash
-cd frontend
 npm install
 npm run dev
 ```
 
-Open http://localhost:4321
+Open http://localhost:4321 — **Admin** is in the header (`/admin`).
 
-## Production build (static files)
-
-Set your public domain first (required for absolute image/JSON-LD URLs):
+Optional `frontend/.env`:
 
 ```bash
-# repo root
-cp .env.example .env
-# edit SITE_URL=https://your-real-domain.com
-
-cd frontend
-cp .env.example .env   # or symlink / reuse the same SITE_URL
-# edit SITE_URL to match
-
-npm ci
-npm run build
+SITE_URL=http://localhost:4321
+# ADMIN_SECRET=dev-secret   # required in production; optional locally
 ```
 
-Upload everything in `frontend/dist/` to your host (`public_html` on GoDaddy). See [GODADDY.md](./GODADDY.md).
+## Production with Docker (recommended)
 
-## Production with Docker
-
-Run these commands from the **repository root** (not from `frontend/`):
+Catalogue data and uploaded images persist in a Docker volume. Admin uploads apply **immediately** (no rebuild).
 
 ```bash
-cd Website-testing-LLM-readable
 cp .env.example .env
-# set SITE_URL=https://your-real-domain.com
+# SITE_URL=https://www.yourdomain.com
+# ADMIN_SECRET=use-a-long-random-string
 
 docker compose up -d --build
-# site: http://localhost:8004
 ```
 
-Or:
+Site: **http://localhost:8004** (or your `PORT`).
+
+| Variable | Purpose |
+|----------|---------|
+| `SITE_URL` | Build-time public URL (JSON-LD, sitemap, absolute image links) |
+| `ADMIN_SECRET` | **Required in production** — password for Excel uploads on `/admin` |
+| `PORT` | Host port mapped to container `4321` |
+| `DATA_DIR` | Inside container: `/app/data` (volume `catalogue_data`) |
+
+### Bare-metal Node (no Docker)
 
 ```bash
-docker build --build-arg SITE_URL=https://your-real-domain.com -t oakline-furniture:production .
-docker run --rm -p 8004:80 oakline-furniture:production
+cp .env.example .env
+export DATA_DIR=/var/lib/oakline/data   # mkdir -p $DATA_DIR/images
+mkdir -p frontend && cd frontend
+npm ci && npm run build
+SITE_URL=... ADMIN_SECRET=... DATA_DIR=... npm run start
 ```
 
-`SITE_URL` is a **build arg** — it is compiled into the static files. Changing it later requires a rebuild.
+Listen on `HOST` / `PORT` (default `0.0.0.0:4321`).
+
+## Admin / Excel import
+
+1. Open `/admin`, enter `ADMIN_SECRET` if configured.
+2. Upload `.xlsx` per category (template: `/templates/catalogue-template.xlsx`).
+3. Each row needs **Name**, **Price**, and a photo in **Image1** (Insert → Pictures → Place in Cell).
+4. Bad rows are skipped; failed uploads do **not** wipe the category.
+
+## Static export (GoDaddy, no admin)
+
+See [GODADDY.md](./GODADDY.md). Import Excel locally, then `npm run build` and upload assets.
 
 ## AI readability surfaces
 
 | Path | Purpose |
 |------|---------|
-| `/llms.txt` | Plain-text catalogue for LLMs (includes absolute image URLs) |
-| `/products.json` | Structured product API (absolute `image` URLs) |
-| `/robots.txt` | Allows major AI crawlers |
+| `/llms.txt` | Plain-text catalogue for LLMs |
+| `/products.json` | Structured product JSON |
+| `/robots.txt` | Crawler rules (admin disallowed) |
 | `/sitemap.xml` | Page index |
 | JSON-LD | `FurnitureStore`, `ItemList`, `Product`, `FAQPage` |
-
-## Catalogue edits
-
-Edit `frontend/src/data/items.json`, replace images under `frontend/public/images/`, then rebuild (and rebuild the Docker image if you use containers).
 
 ## License
 

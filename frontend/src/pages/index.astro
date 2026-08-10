@@ -2,16 +2,19 @@
 import Layout from '../layouts/Layout.astro';
 import CatalogueRows from '../components/CatalogueRows.astro';
 import AboutSection from '../components/AboutSection.astro';
-import itemsData from '../data/items.json';
+import { readItems } from '../lib/itemsStore.js';
 import { absoluteUrl, siteOrigin } from '../lib/urls.js';
 import { buildRows } from '../lib/catalogue.js';
+import { publishableItems } from '../lib/publishable.js';
+
+export const prerender = false;
 
 const site = siteOrigin(Astro.site);
 const absoluteImage = (img) => absoluteUrl(site, img);
 
-// Only real pieces reach the structured data; the open slots the catalogue
-// renders are presentation and must never be described as products.
-const groupedItems = buildRows(itemsData).map(row => ({ ...row, items: row.filled }));
+const itemsData = await readItems();
+const liveItems = publishableItems(itemsData);
+const groupedItems = buildRows(liveItems).map(row => ({ ...row, items: row.filled }));
 
 // Build comprehensive Schema.org JSON-LD for AI crawlers & LLM reading
 const catalogueSchema = {
@@ -136,7 +139,7 @@ const catalogueSchema = {
     </section>
 
     <section id="catalogue" aria-labelledby="cat-h" class="catalogue-section">
-      <CatalogueRows items={itemsData} headingId="cat-h" heading="The catalogue" resetHref="/" />
+      <CatalogueRows items={liveItems} headingId="cat-h" heading="The catalogue" resetHref="/" />
     </section>
 
     <AboutSection />

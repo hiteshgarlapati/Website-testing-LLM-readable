@@ -7,6 +7,7 @@ interface Props {
   jsonLd?: object;
   image?: string;
   search?: boolean;
+  noindex?: boolean;
 }
 
 const {
@@ -16,7 +17,8 @@ const {
   image = "/images/p1.png",
   // Only pages that render the catalogue get the search box; elsewhere it
   // would be a control with nothing to filter.
-  search = false
+  search = false,
+  noindex = false
 } = Astro.props;
 
 // Every absolute URL derives from the configured site, so pointing SITE_URL at
@@ -72,8 +74,14 @@ const finalJsonLd = jsonLd ? jsonLd : storeSchema;
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content={description} />
-  <meta name="robots" content="index, follow" />
-  <meta name="robots" content="max-image-preview:large, max-snippet:-1" />
+  {noindex ? (
+    <meta name="robots" content="noindex, nofollow" />
+  ) : (
+    <>
+      <meta name="robots" content="index, follow" />
+      <meta name="robots" content="max-image-preview:large, max-snippet:-1" />
+    </>
+  )}
   <link rel="canonical" href={canonical} />
 
   <!-- OpenGraph / Social -->
@@ -127,6 +135,7 @@ const finalJsonLd = jsonLd ? jsonLd : storeSchema;
         <a href="/#about" class="btn-pill">About</a>
         <a href="/llms.txt" target="_blank" rel="noopener" class="btn-pill btn-ai-pill" title="AI/LLM readable text format">llms.txt</a>
         <a href="/products.json" target="_blank" rel="noopener" class="btn-pill btn-ai-pill" title="Structured product JSON">products.json</a>
+        <a href="/admin" class="btn-pill btn-admin">Admin</a>
       </nav>
     </div>
   </header>

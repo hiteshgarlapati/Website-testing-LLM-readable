@@ -12,12 +12,15 @@
   ],
   "scripts": {
     "dev": "astro dev",
-    "start": "astro preview",
     "build": "astro build",
+    "start": "node dist/server/entry.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.1.6"
+    "@astrojs/node": "^11.1.0",
+    "astro": "^7.1.6",
+    "exceljs": "^4.4.0",
+    "jszip": "^3.10.1"
   }
 }

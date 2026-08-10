@@ -171,6 +171,18 @@ header {
   text-decoration: none;
 }
 
+.btn-admin {
+  background: var(--text-dark);
+  color: var(--bg-main);
+  border-color: var(--text-dark);
+}
+
+.btn-admin:hover {
+  opacity: 0.92;
+  color: var(--bg-main);
+  text-decoration: none;
+}
+
 /* ---------- Header search ---------- */
 
 .site-search {

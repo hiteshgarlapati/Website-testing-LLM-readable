@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import node from '@astrojs/node';
 import { loadEnv } from 'vite';
 import { fileURLToPath } from 'node:url';
 
@@ -13,6 +14,7 @@ const SITE_URL = env.SITE_URL || 'https://oaklinefurniture.example';
 // https://astro.build/config
 export default defineConfig({
   output: 'static',
+  adapter: node({ mode: 'standalone' }),
   site: SITE_URL,
   // Emit /product/slug.html instead of /product/slug/index.html so
   // Nginx, Apache, and GoDaddy all resolve /product/slug without 404s.

@@ -1,14 +1,19 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import CatalogueRows from '../components/CatalogueRows.astro';
-import itemsData from '../data/items.json';
+import { readItems } from '../lib/itemsStore.js';
 import { absoluteUrl, siteOrigin } from '../lib/urls.js';
 import { buildRows } from '../lib/catalogue.js';
+import { publishableItems } from '../lib/publishable.js';
+
+export const prerender = false;
 
 const site = siteOrigin(Astro.site);
 const absoluteImage = (img) => absoluteUrl(site, img);
 
-const rows = buildRows(itemsData);
+const itemsData = await readItems();
+const liveItems = publishableItems(itemsData);
+const rows = buildRows(liveItems);
 
 // CollectionPage rather than a second FurnitureStore: this page groups the same
 // products the home page lists, so it must not claim to be another storefront.
@@ -67,10 +72,10 @@ const browseSchema = {
     <div class="browse-head">
       <p class="crumb"><a href="/">Home</a> · Browse</p>
       <h1>Browse the catalogue</h1>
-      <p class="browse-lede">Four categories. Twelve slots are filled today; the rest are reserved for pieces still on the bench. Every row scrolls on its own — use the arrows or drag.</p>
+      <p class="browse-lede">Four categories. Twelve slots are filled today; the rest are reserved for pieces still on the bench. Scroll each row with the arrows or by dragging.</p>
     </div>
 
-    <CatalogueRows items={itemsData} headingId="browse-h" heading="Products" resetHref="/browse" />
+    <CatalogueRows items={liveItems} headingId="browse-h" heading="Products" resetHref="/browse" />
   </main>
 </Layout>
 

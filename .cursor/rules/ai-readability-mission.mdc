@@ -1,0 +1,27 @@
+---
+description: Primary project goal — LLM and AI crawler readability testing
+alwaysApply: true
+---
+
+# Project mission
+
+This repo is a **realistic furniture catalogue mockup** (Oakline Furniture) whose **main agenda** is testing how well **AI crawlers, search agents, and LLMs** can read and use the site—not building full ecommerce (checkout, accounts, payments).
+
+## When editing, prioritize
+
+1. **Machine-readable surfaces stay correct and in sync** with `frontend/src/data/items.json`:
+   - `/llms.txt`, `/products.json`, `/robots.txt`, `/sitemap.xml`
+   - Schema.org JSON-LD on pages (`FurnitureStore`, `Product`, `ItemList`, `FAQPage`, etc.)
+2. **Absolute URLs** via `SITE_URL` / `urls.js` for canonical, OG, JSON-LD, and feed image/product links (rebuild when domain changes).
+3. **Plain, factual product copy** in data and feeds (name, price, specs, availability, description)—easy for agents to parse without scraping layout.
+4. **Crawler-friendly static HTML** as a human-facing layer; do not hide catalogue facts only in client-only JS or images.
+
+## Avoid unless explicitly requested
+
+- Features that distract from readability testing (heavy client frameworks, obfuscated content, paywalls, bot-blocking).
+- Breaking or duplicating feed/JSON-LD semantics when changing UI.
+- Relative-only URLs in feeds or structured data where agents need full links.
+
+## Human UI
+
+Keep the storefront believable and accessible, but treat visual polish as secondary to **accurate, consistent, discoverable machine-readable catalogue data**.

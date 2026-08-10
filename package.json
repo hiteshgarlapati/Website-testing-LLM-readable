@@ -21,6 +21,8 @@
     "serve-static": "python -m http.server 8080 --directory static",
     "serve-dist": "python -m http.server 8080 --directory frontend/dist",
     "docker:build": "docker build --build-arg SITE_URL=${SITE_URL:-https://oaklinefurniture.example} -t oakline-furniture:production .",
+    "docker:build:static": "docker build --target static --build-arg SITE_URL=${SITE_URL:-https://oaklinefurniture.example} -t oakline-furniture:static .",
+    "start:prod": "cd frontend && npm run build && npm run start",
     "docker:up": "docker compose up -d --build",
     "docker:down": "docker compose down"
   },

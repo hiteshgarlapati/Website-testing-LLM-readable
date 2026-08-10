@@ -5,17 +5,26 @@ services:
       dockerfile: Dockerfile
       target: production
       args:
-        # Must be build-time — Astro embeds SITE_URL into the static files
         SITE_URL: ${SITE_URL:-https://oaklinefurniture.example}
     image: oakline-furniture:production
     container_name: oakline-furniture-app
     restart: unless-stopped
     ports:
-      - "${PORT:-8004}:80"
+      - "${PORT:-8004}:4321"
     environment:
-      - NODE_ENV=production
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 4321
+      SITE_URL: ${SITE_URL:-https://oaklinefurniture.example}
+      ADMIN_SECRET: ${ADMIN_SECRET:-}
+      DATA_DIR: /app/data
+    volumes:
+      - catalogue_data:/app/data
     networks:
       - web-network
+
+volumes:
+  catalogue_data:
 
 networks:
   web-network:

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Product photo pending">
+  <rect width="800" height="600" fill="#EAE1D6"/>
+  <rect x="280" y="200" width="240" height="200" rx="8" fill="none" stroke="#7C736A" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="400" y="320" text-anchor="middle" font-family="system-ui,sans-serif" font-size="18" fill="#7C736A">Photo not provided</text>
+</svg>

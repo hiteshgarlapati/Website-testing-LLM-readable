@@ -1,48 +1,65 @@
-# Stage 1: Build the static Astro site (Node 22)
-# Uses the monorepo root package-lock.json (npm workspaces).
+# Stage 1: Build Astro (Node 22, monorepo workspaces)
 FROM node:22-alpine AS build
 
 WORKDIR /app
 
-# Baked into HTML, JSON-LD, sitemap, llms.txt, and absolute image URLs
 ARG SITE_URL=https://oaklinefurniture.example
 ENV SITE_URL=$SITE_URL
 ENV NODE_ENV=production
 
-# Copy workspace manifests — lockfile lives at the repo root
 COPY package.json package-lock.json ./
 COPY frontend/package.json ./frontend/
 
-# Clean install from the root lockfile (installs the frontend workspace)
 RUN npm ci
 
-# Copy application source and build
 COPY frontend ./frontend
 WORKDIR /app/frontend
 RUN npm run build
 
-# Stage 2: Serve the static bundle with Nginx
-FROM nginx:1.27-alpine AS production
+# Stage 2: Node server (public catalogue + admin + Excel import)
+FROM node:22-alpine AS production
 
 LABEL org.opencontainers.image.title="Oakline Furniture"
-LABEL org.opencontainers.image.description="AI-readable static furniture catalogue"
+LABEL org.opencontainers.image.description="AI-readable furniture catalogue with admin Excel import"
 LABEL org.opencontainers.image.source="https://github.com/hiteshgarlapati/Website-testing-LLM-readable"
+
+RUN apk add --no-cache tini wget
+
+WORKDIR /app/frontend
+
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=4321
+ENV DATA_DIR=/app/data
+
+COPY --from=build /app/node_modules /app/node_modules
+COPY --from=build /app/frontend/package.json ./package.json
+COPY --from=build /app/frontend/dist ./dist
+COPY --from=build /app/frontend/src/data/items.json /app/seed/items.json
+COPY --from=build /app/frontend/public/images /app/seed/images
+
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh && mkdir -p /app/data/images
+
+VOLUME ["/app/data"]
+
+EXPOSE 4321
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD wget -qO- "http://127.0.0.1:${PORT}/" >/dev/null || exit 1
+
+ENTRYPOINT ["/sbin/tini", "--", "/entrypoint.sh"]
+CMD ["node", "dist/server/entry.mjs"]
+
+# Stage 3: Static-only Nginx (no admin — for plain static hosts)
+FROM nginx:1.27-alpine AS static
 
 RUN rm -rf /usr/share/nginx/html/*
 
-COPY --from=build /app/frontend/dist /usr/share/nginx/html
+COPY --from=build /app/frontend/dist/client /usr/share/nginx/html
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Confirm critical AI-facing files exist in the image
-RUN test -f /usr/share/nginx/html/index.html \
- && test -f /usr/share/nginx/html/products.json \
- && test -f /usr/share/nginx/html/llms.txt \
- && test -f /usr/share/nginx/html/robots.txt \
- && test -f /usr/share/nginx/html/sitemap.xml
+RUN test -f /usr/share/nginx/html/index.html
 
 EXPOSE 80
-
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget -qO- http://127.0.0.1/ >/dev/null || exit 1
-
 CMD ["nginx", "-g", "daemon off;"]

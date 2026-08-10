@@ -95,9 +95,9 @@ const totals = slotTotals(rows);
 
 <script is:inline>
 /* Progressive enhancement only. Every slot is already in the HTML above; this
-   adds carousel arrows, gentle auto-advance, and filtering that hides nodes
-   already in the document. With JS off the rows still scroll natively and all
-   content stays readable, which is what crawlers see. */
+   adds carousel arrows and filtering that hides nodes already in the document.
+   With JS off the rows still scroll natively and all content stays readable,
+   which is what crawlers see. */
 (function () {
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -134,23 +134,6 @@ const totals = slotTotals(rows);
     track.addEventListener('scroll', sync, { passive: true });
     window.addEventListener('resize', sync);
     sync();
-
-    if (reduce) return;
-    var paused = false, dir = 1;
-    ['pointerenter', 'focusin', 'pointerdown'].forEach(function (e) {
-      wrap.addEventListener(e, function () { paused = true; });
-    });
-    ['pointerleave', 'focusout'].forEach(function (e) {
-      wrap.addEventListener(e, function () { paused = false; });
-    });
-    setInterval(function () {
-      if (paused || document.hidden || !track.clientWidth) return;
-      var max = track.scrollWidth - track.clientWidth;
-      if (max <= 8) return;
-      if (track.scrollLeft >= max - 8) dir = -1;
-      else if (track.scrollLeft <= 8) dir = 1;
-      tween(track, dir * 286);
-    }, 4200);
   });
 
   var toggle = document.getElementById('filters-toggle');

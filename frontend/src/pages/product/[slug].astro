@@ -1,16 +1,19 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import itemsData from '../../data/items.json';
+import { readItems } from '../../lib/itemsStore.js';
 import { absoluteUrl, siteOrigin } from '../../lib/urls.js';
+import { publishableItems } from '../../lib/publishable.js';
 
-export async function getStaticPaths() {
-  return itemsData.map((item) => ({
-    params: { slug: item.slug },
-    props: { item },
-  }));
+export const prerender = false;
+
+const slug = Astro.params.slug;
+const itemsData = await readItems();
+const liveItems = publishableItems(itemsData);
+const item = liveItems.find((entry) => entry.slug === slug);
+
+if (!item) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
 }
-
-const { item } = Astro.props;
 
 const site = siteOrigin(Astro.site);
 const absoluteImage = (img) => absoluteUrl(site, img);
@@ -122,7 +125,7 @@ const productSchema = {
 };
 
 // Find 2 related items in the same category (or fallback to others)
-const relatedItems = itemsData
+const relatedItems = liveItems
   .filter(p => p.categoryId === item.categoryId && p.id !== item.id)
   .slice(0, 2);
 ---

@@ -1,59 +1,56 @@
 # GoDaddy (static hosting) deploy guide
-#
-# This site builds to plain HTML/CSS/JS in frontend/dist/.
-# That folder is what you upload to GoDaddy.
 
-## 1. Set your real domain (important for AI crawlers)
+GoDaddy shared hosting serves **static files only**. The **live Excel admin** (`/admin`) needs the **Docker / Node** production setup in [README.md](./README.md).
 
-In `frontend/`, create a `.env` file:
+## Option A — Static site (no live admin)
+
+### 1. Set your real domain
+
+In `frontend/.env`:
 
 ```
 SITE_URL=https://YOUR-DOMAIN.com
 ```
 
-JSON-LD, sitemap.xml, robots.txt, llms.txt, and **product image URLs in products.json**
-all use this URL. After setting it, rebuild so absolute picture links point at your live host
-(e.g. `https://YOUR-DOMAIN.com/images/p4.png`) — that is what lets multimodal LLMs fetch photos.
+### 2. Update the catalogue locally
 
-If you skip it, they keep the placeholder `https://oaklinefurniture.example`.
+- Edit `frontend/src/data/items.json`, **or**
+- Run `npm run dev`, use `/admin` on your machine, then commit the updated `items.json` and `frontend/public/images/`.
 
-## 2. Build
-
-From the repo root:
+### 3. Build
 
 ```bash
 cd frontend
-npm install
+npm ci
 npm run build
 ```
 
-Output: `frontend/dist/`
+For static hosts, prerendered assets live under `frontend/dist/client/` (and server bundle under `dist/server/` — not needed on GoDaddy).
 
-## 3. Upload to GoDaddy
+Upload the **contents of `dist/client/`** to `public_html` (plus any product images under `images/`).
 
-1. Log in to GoDaddy → your hosting → File Manager (or use FTP).
-2. Open the site’s web root (usually `public_html`).
-3. Upload **everything inside** `frontend/dist/` into `public_html`
-   (index.html should sit at the root of public_html, not inside a nested folder).
-4. Visit `https://YOUR-DOMAIN.com` and check:
-   - `/` homepage
-   - `/product/harbor-bed-frame`
-   - `/products.json`
-   - `/llms.txt`
-   - `/robots.txt`
-   - `/sitemap.xml`
+### 4. Verify
 
-## 4. Docker production (optional)
+- `/`, `/browse`, `/product/…`
+- `/products.json`, `/llms.txt`, `/robots.txt`, `/sitemap.xml`
 
-If the recipient runs containers instead of plain static hosting:
+## Option B — Full production (admin + uploads)
+
+Use a VPS or any host that runs Docker:
 
 ```bash
 cp .env.example .env
-# set SITE_URL=https://YOUR-DOMAIN.com
+# SITE_URL=https://YOUR-DOMAIN.com
+# ADMIN_SECRET=long-random-secret
 
 docker compose up -d --build
-# http://localhost:8004
 ```
 
-Requires Docker Desktop. Image uses **Node 22** to build, then **Nginx** to serve.
+Point your domain at the container port (reverse proxy with TLS recommended).
 
+Catalogue data is stored in the `catalogue_data` Docker volume (`items.json` + images).
+
+## Notes
+
+- `SITE_URL` is baked in at **build** time for JSON-LD and absolute URLs. Change domain → rebuild (static) or rebuild Docker image (production).
+- Product images must exist on disk for items to appear on the public site (no placeholder listings).
