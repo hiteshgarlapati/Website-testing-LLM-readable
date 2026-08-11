@@ -1,10 +1,11 @@
 import { readItems } from '../lib/itemsStore.js';
 import { publishableItems } from '../lib/publishable.js';
+import { CATEGORIES } from '../lib/catalogue.js';
 
 export const prerender = false;
 
 // Falls back to the configured site when a request context has no origin.
-const DEFAULT_SITE = 'https://oaklinefurniture.example';
+const DEFAULT_SITE = 'https://quillovan.com';
 
 const escapeXml = value =>
   String(value)
@@ -29,9 +30,22 @@ export async function GET(context) {
     .sort()
     .pop();
 
+  // Category pages carry only what they actually hold, so an empty category is
+  // left out rather than submitted as a thin page.
+  const categoryUrls = CATEGORIES.filter(category =>
+    items.some(item => item.categoryId === category.id)
+  ).map(category => ({
+    loc: `${base}/${category.id}`,
+    changefreq: 'weekly',
+    priority: '0.9',
+    lastmod: newestEdit
+  }));
+
   const urls = [
     { loc: `${base}/`, changefreq: 'weekly', priority: '1.0', lastmod: newestEdit },
     { loc: `${base}/browse`, changefreq: 'weekly', priority: '0.9', lastmod: newestEdit },
+    ...categoryUrls,
+    { loc: `${base}/about`, changefreq: 'monthly', priority: '0.6', lastmod: null },
     ...items.map(item => ({
       loc: `${base}/product/${item.slug}`,
       changefreq: 'monthly',

@@ -1,0 +1,187 @@
+---
+/**
+ * Standalone /about page. The shop's story previously existed only as a `#about`
+ * anchor on the home page, which gives an assistant answering "who makes this
+ * furniture?" no distinct URL to cite. Everything here restates facts the site
+ * already holds — nothing about the business is invented on this page.
+ */
+import Layout from '../layouts/Layout.astro';
+import { readItems } from '../lib/itemsStore.js';
+import { publishableItems } from '../lib/publishable.js';
+import { siteOrigin } from '../lib/urls.js';
+import { CATEGORIES } from '../lib/catalogue.js';
+import {
+  BUSINESS,
+  addressLines,
+  contactEmail,
+  contactPhone,
+  deliveryPolicy,
+  placeLabel,
+  sourcingPolicy,
+  telHref,
+  workshopLabel
+} from '../lib/business.js';
+
+export const prerender = false;
+
+const site = siteOrigin(Astro.site);
+const itemsData = await readItems();
+const liveItems = publishableItems(itemsData);
+
+const lines = addressLines();
+const phone = contactPhone();
+const email = contactEmail();
+
+const description = `Quillovan Furniture is a two-person workshop in ${placeLabel()} making ${liveItems.length} solid-wood pieces across beds, chairs, tables and sofas. Mechanical joinery, hardwood ${sourcingPolicy()}, ten-year free repairs.`;
+
+const aboutSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${site}/about#breadcrumb`,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${site}/` },
+        { "@type": "ListItem", "position": 2, "name": "About", "item": `${site}/about` }
+      ]
+    },
+    {
+      "@type": "AboutPage",
+      "@id": `${site}/about#page`,
+      "name": "About Quillovan Furniture",
+      "description": description,
+      "url": `${site}/about`,
+      "isPartOf": { "@id": `${site}/#website` },
+      "mainEntity": { "@id": `${site}/#store` }
+    }
+  ]
+};
+---
+
+<Layout title={`About the workshop — Quillovan Furniture, ${placeLabel()}`} description={description} jsonLd={aboutSchema}>
+  <main class="page-container about-page" id="top">
+    <nav aria-label="Breadcrumb" class="crumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li aria-hidden="true">·</li>
+        <li aria-current="page">About</li>
+      </ol>
+    </nav>
+
+    <header class="about-head">
+      <h1>A two-person workshop</h1>
+      <p class="lede">
+        Quillovan has made furniture since {BUSINESS.foundedYear}. Dana mills and joins; Peter finishes
+        and delivers. Between them they keep {liveItems.length} pieces in the catalogue across
+        {CATEGORIES.length} categories — no seasonal ranges, no drop-shipped filler.
+      </p>
+    </header>
+
+    <section aria-labelledby="how-h" class="about-block">
+      <h2 id="how-h">How the work is done</h2>
+      <p>
+        Every joint is mechanical — mortise, tenon, dovetail — so a piece can be taken apart and
+        repaired rather than replaced. Hardwood is {sourcingPolicy()}, and each order is built to
+        size in {workshopLabel()} rather than pulled from a warehouse.
+      </p>
+      <p>
+        Send a photo if something breaks, whenever that happens. Repairs on our own work are free
+        for the first ten years.
+      </p>
+    </section>
+
+    <section aria-labelledby="buy-h" class="about-block">
+      <h2 id="buy-h">Ordering and delivery</h2>
+      <p>{deliveryPolicy()}</p>
+      <p>
+        Most in-stock pieces ship immediately; made-to-order work takes four to six weeks. Because
+        each piece is built in a small batch, orders are placed directly with the shop rather than
+        through a cart.
+      </p>
+    </section>
+
+    <section aria-labelledby="visit-h" class="about-block">
+      <h2 id="visit-h">Visit or write</h2>
+      <ul class="contact-list">
+        {lines.length > 0 && <li set:html={lines.join('<br />')} />}
+        <li>Tuesday–Saturday, 10am–6pm</li>
+        {phone && <li><a href={telHref()}>{phone}</a></li>}
+        {email && <li><a href={`mailto:${email}`}>{email}</a></li>}
+      </ul>
+    </section>
+
+    <section aria-labelledby="cat-h" class="about-block">
+      <h2 id="cat-h">What we make</h2>
+      <ul class="cat-links">
+        {CATEGORIES.map(category => (
+          <li><a href={`/${category.id}`}>{category.name}</a> — {category.subtitle}</li>
+        ))}
+      </ul>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .about-page {
+    padding-bottom: 96px;
+    max-width: 72ch;
+  }
+  .crumb {
+    padding: 32px 0 0;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .crumb ol {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .about-head {
+    padding: 20px 0 8px;
+  }
+  .about-head h1 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(36px, 5vw, 54px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .lede {
+    margin-top: 16px;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    text-wrap: pretty;
+  }
+  .about-block {
+    margin-top: 44px;
+  }
+  .about-block h2 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  .about-block p {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--text-muted);
+    text-wrap: pretty;
+  }
+  .about-block p + p {
+    margin-top: 14px;
+  }
+  .contact-list,
+  .cat-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text-muted);
+  }
+</style>

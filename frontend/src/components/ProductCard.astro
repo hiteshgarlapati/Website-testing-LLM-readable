@@ -1,4 +1,7 @@
 ---
+import { imageSize } from '../lib/imageSize.js';
+import { imageAlt, primaryMaterial } from '../lib/material.js';
+
 export interface Props {
   item: {
     name: string;
@@ -10,18 +13,31 @@ export interface Props {
     specs: string[];
     image: string;
   };
+  /** Above-the-fold cards load eagerly so the LCP image is not deferred. */
+  priority?: boolean;
 }
 
-const { item } = Astro.props;
+const { item, priority = false } = Astro.props;
 
-// Two specs keep the card the same height as the open-slot placeholder.
-const summarySpecs = item.specs.slice(0, 2).join(' · ');
+// Two specs keep the card the same height as the open-slot placeholder. With
+// specs empty across the catalogue, fall back to the material the copy states.
+const material = primaryMaterial(item);
+const summarySpecs = item.specs.length ? item.specs.slice(0, 2).join(' · ') : material;
 const inStock = item.availability.includes('In stock');
+const size = imageSize(item.image);
 ---
 
 <article class="card">
   <a href={`/product/${item.slug}`} class="card-image" aria-label={`View details for ${item.name}`}>
-    <img src={item.image} alt={item.name} loading="lazy" />
+    <img
+      src={item.image}
+      alt={imageAlt(item)}
+      width={size?.width}
+      height={size?.height}
+      loading={priority ? 'eager' : 'lazy'}
+      fetchpriority={priority ? 'high' : undefined}
+      decoding={priority ? 'sync' : 'async'}
+    />
   </a>
   <div class="card-body">
     <h4><a href={`/product/${item.slug}`}>{item.name}</a></h4>

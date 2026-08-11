@@ -1,4 +1,4 @@
-const DEFAULT_SITE = 'https://oaklinefurniture.example';
+const DEFAULT_SITE = 'https://quillovan.com';
 
 /** Normalize Astro `site` / SITE_URL to an origin without a trailing slash. */
 export function siteOrigin(site) {

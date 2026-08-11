@@ -3,6 +3,22 @@ import Layout from '../../layouts/Layout.astro';
 import { readItems } from '../../lib/itemsStore.js';
 import { absoluteUrl, siteOrigin } from '../../lib/urls.js';
 import { publishableItems } from '../../lib/publishable.js';
+import { SHIPPING_RATE } from '../../lib/storeSchema.js';
+import { imageSize } from '../../lib/imageSize.js';
+import { allMaterials, imageAlt, primaryColour, primaryMaterial } from '../../lib/material.js';
+import {
+  BUSINESS,
+  contactEmail,
+  contactPhone,
+  deliveryPolicy,
+  placeLabel,
+  sourcingPolicy,
+  telHref,
+  workshopLabel
+} from '../../lib/business.js';
+
+const inquiryEmail = contactEmail();
+const inquiryPhone = contactPhone();
 
 export const prerender = false;
 
@@ -23,6 +39,12 @@ const absoluteImage = (img) => absoluteUrl(site, img);
 const priceValidUntil = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
   .toISOString()
   .slice(0, 10);
+
+// Derived from the item's own name and description — never invented.
+const materials = allMaterials(item);
+const colour = primaryColour(item);
+const mainMaterial = primaryMaterial(item);
+const mainSize = imageSize(item.image);
 
 // Individual Product Schema.org JSON-LD for AI crawlers & LLM agents
 const productSchema = {
@@ -59,52 +81,62 @@ const productSchema = {
       "mpn": item.id,
       "url": `${site}/product/${item.slug}`,
       "category": item.category,
-      "material": item.specs[0] || "Solid wood",
+      // Material and colour come from the item's own copy; both are omitted
+      // when it states neither, rather than defaulting to "Solid wood" for a
+      // velvet loveseat the way this previously did.
+      ...(materials.length ? { "material": materials } : {}),
+      ...(colour ? { "color": colour } : {}),
       "description": item.description,
       "image": [
         absoluteImage(item.image)
       ],
-      "additionalProperty": item.specs.map(spec => ({
-        "@type": "PropertyValue",
-        "name": "Specification",
-        "value": spec
-      })),
+      "additionalProperty": [
+        ...item.specs.map(spec => ({
+          "@type": "PropertyValue",
+          "name": "Specification",
+          "value": spec
+        })),
+        ...(materials.length
+          ? [{ "@type": "PropertyValue", "name": "Material", "value": materials.join(', ') }]
+          : []),
+        ...(colour ? [{ "@type": "PropertyValue", "name": "Colour", "value": colour }] : [])
+      ],
       "brand": {
         "@type": "Brand",
-        "name": "Oakline"
+        "name": "Quillovan"
       },
       "manufacturer": {
         "@type": "Organization",
-        "name": "Oakline Furniture",
-        "address": "Grand Rapids, Michigan"
+        "name": "Quillovan Furniture",
+        "address": placeLabel()
       },
       "offers": {
         "@type": "Offer",
         "url": `${site}/product/${item.slug}`,
-        "priceCurrency": "USD",
+        "priceCurrency": "INR",
         "price": item.price,
         "priceValidUntil": priceValidUntil,
         "availability": item.schemaAvailability,
         "itemCondition": "https://schema.org/NewCondition",
         "seller": {
           "@type": "Organization",
-          "name": "Oakline Furniture"
+          "name": "Quillovan Furniture"
         },
         "shippingDetails": {
           "@type": "OfferShippingDetails",
           "shippingRate": {
             "@type": "MonetaryAmount",
-            "value": 180,
-            "currency": "USD"
+            "value": SHIPPING_RATE,
+            "currency": "INR"
           },
           "shippingDestination": {
             "@type": "DefinedRegion",
-            "addressCountry": "US"
+            "addressCountry": "IN"
           }
         },
         "hasMerchantReturnPolicy": {
           "@type": "MerchantReturnPolicy",
-          "applicableCountry": "US",
+          "applicableCountry": "IN",
           "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
           "merchantReturnDays": 30,
           "returnMethod": "https://schema.org/ReturnByMail",
@@ -130,7 +162,7 @@ const relatedItems = liveItems
   .slice(0, 2);
 ---
 
-<Layout title={`${item.name} | Oakline Furniture`} description={item.description} jsonLd={productSchema} image={item.image}>
+<Layout title={`${item.name} | Quillovan Furniture`} description={item.description} jsonLd={productSchema} image={item.image} ogType="product">
   <main class="page-container" id="top">
     <!-- Breadcrumb Navigation -->
     <nav aria-label="Breadcrumb" class="breadcrumb-nav">
@@ -151,11 +183,19 @@ const relatedItems = liveItems
       <!-- Product Image Display -->
       <div class="product-visuals">
         <div class="main-image-card">
-          <img src={item.image} alt={item.name} />
+          <img
+            src={item.image}
+            alt={imageAlt(item)}
+            width={mainSize?.width}
+            height={mainSize?.height}
+            loading="eager"
+            fetchpriority="high"
+            decoding="sync"
+          />
         </div>
         <div class="craftsmanship-box">
-          <h4>Grand Rapids Craftsmanship</h4>
-          <p>Every piece is joined mechanically with tenons and dovetails from locally milled hardwood within 200 miles of Wealthy Street. Repairs are covered free for ten years.</p>
+          <h4>Workshop Craftsmanship</h4>
+          <p>Every piece is joined mechanically with tenons and dovetails from locally milled hardwood {sourcingPolicy()}. Repairs are covered free for ten years.</p>
         </div>
       </div>
 
@@ -182,7 +222,13 @@ const relatedItems = liveItems
                 <span>{spec}</span>
               </li>
             ))}
-            <li><span class="checkmark">✔</span> <span>Handmade in Grand Rapids, MI</span></li>
+            {materials.length > 0 && (
+              <li><span class="checkmark">✔</span> <span>Material: {materials.join(', ')}</span></li>
+            )}
+            {colour && (
+              <li><span class="checkmark">✔</span> <span>Finish: {colour}</span></li>
+            )}
+            <li><span class="checkmark">✔</span> <span>Handmade in {placeLabel()}</span></li>
             <li><span class="checkmark">✔</span> <span>10-Year Repair Warranty included</span></li>
           </ul>
         </div>
@@ -192,14 +238,18 @@ const relatedItems = liveItems
           <h3>Order & Commission Inquiry</h3>
           <p>Since we build in small custom batches, orders are placed directly with Dana and Peter via phone or email.</p>
           <div class="action-buttons">
-            <a href={`mailto:shop@oaklinefurniture.example?subject=Inquiry: ${item.name} (${item.formattedPrice})`} class="btn-primary">
-              ✉ Email Shop to Order
-            </a>
-            <a href="tel:+16165550142" class="btn-secondary">
-              📞 (616) 555-0142
-            </a>
+            {inquiryEmail && (
+              <a href={`mailto:${inquiryEmail}?subject=Inquiry: ${item.name} (${item.formattedPrice})`} class="btn-primary">
+                ✉ Email Shop to Order
+              </a>
+            )}
+            {inquiryPhone && (
+              <a href={telHref()} class="btn-secondary">
+                📞 {inquiryPhone}
+              </a>
+            )}
           </div>
-          <p class="delivery-info">Free delivery and setup within 90 miles of Grand Rapids ($180 flat-rate crating across lower 48 states).</p>
+          <p class="delivery-info">{deliveryPolicy()}</p>
         </div>
       </div>
     </section>
@@ -216,7 +266,14 @@ const relatedItems = liveItems
             <li>
               <article class="mini-card">
                 <a href={`/product/${rel.slug}`} class="mini-img">
-                  <img src={rel.image} alt={rel.name} loading="lazy" />
+                  <img
+                    src={rel.image}
+                    alt={imageAlt(rel)}
+                    width={imageSize(rel.image)?.width}
+                    height={imageSize(rel.image)?.height}
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </a>
                 <div class="mini-info">
                   <h4><a href={`/product/${rel.slug}`}>{rel.name}</a></h4>

@@ -18,6 +18,30 @@ function securityHeaders(response) {
   return response;
 }
 
+/**
+ * Pages are rendered on demand so admin imports appear without a rebuild, which
+ * previously meant every crawler hit re-read and re-parsed items.json. A short
+ * shared TTL plus a long stale-while-revalidate window lets a CDN or reverse
+ * proxy serve instantly while still picking up catalogue edits within a minute.
+ *
+ * Deliberately not applied to /admin or /api — those must never be cached, and
+ * they are already noindex.
+ */
+function cacheableHtml(url, response) {
+  if (url.pathname.startsWith('/admin') || url.pathname.startsWith('/api/')) {
+    response.headers.set('cache-control', 'no-store');
+    return response;
+  }
+  if (response.status !== 200 || response.headers.has('cache-control')) return response;
+
+  const type = response.headers.get('content-type') || '';
+  const cacheable = /text\/html|application\/xml|text\/plain|application\/json/.test(type);
+  if (cacheable) {
+    response.headers.set('cache-control', 'public, max-age=0, s-maxage=60, stale-while-revalidate=600');
+  }
+  return response;
+}
+
 export async function onRequest(context, next) {
   const url = new URL(context.request.url);
 
@@ -39,5 +63,5 @@ export async function onRequest(context, next) {
   }
 
   const response = await next();
-  return securityHeaders(response);
+  return cacheableHtml(url, securityHeaders(response));
 }

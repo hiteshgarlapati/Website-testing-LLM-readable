@@ -1,4 +1,4 @@
-const DEFAULT_SITE = 'https://oaklinefurniture.example';
+const DEFAULT_SITE = 'https://quillovan.com';
 
 // Named so the allow-list stays readable; every one of these is a crawler that
 // feeds an AI assistant's index or its live browsing.

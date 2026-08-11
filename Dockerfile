@@ -3,7 +3,7 @@ FROM node:22-alpine AS build
 
 WORKDIR /app
 
-ARG SITE_URL=https://oaklinefurniture.example
+ARG SITE_URL=https://quillovan.com
 ENV SITE_URL=$SITE_URL
 ENV NODE_ENV=production
 
@@ -19,7 +19,7 @@ RUN npm run build
 # Stage 2: Node server (public catalogue + admin + Excel import)
 FROM node:22-alpine AS production
 
-LABEL org.opencontainers.image.title="Oakline Furniture"
+LABEL org.opencontainers.image.title="Quillovan Furniture"
 LABEL org.opencontainers.image.description="AI-readable furniture catalogue with admin Excel import"
 LABEL org.opencontainers.image.source="https://github.com/hiteshgarlapati/Website-testing-LLM-readable"
 

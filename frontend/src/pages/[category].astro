@@ -1,0 +1,192 @@
+---
+/**
+ * Real, separately indexable category pages at /sofas, /chairs, /tables, /beds.
+ *
+ * These previously existed only as `#sofas` anchors on the home page, so a
+ * crawler saw one document covering four categories and could not rank any of
+ * them for a specific query. Each page now carries its own canonical URL, title,
+ * description and ItemList — every product is in the server-rendered HTML, with
+ * no JS required to reach it.
+ */
+import Layout from '../layouts/Layout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { readItems } from '../lib/itemsStore.js';
+import { absoluteUrl, siteOrigin } from '../lib/urls.js';
+import { CATEGORIES } from '../lib/catalogue.js';
+import { publishableItems } from '../lib/publishable.js';
+import { primaryMaterial } from '../lib/material.js';
+import { placeLabel } from '../lib/business.js';
+
+export const prerender = false;
+
+const category = CATEGORIES.find(entry => entry.id === Astro.params.category);
+if (!category) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const site = siteOrigin(Astro.site);
+const absoluteImage = img => absoluteUrl(site, img);
+
+const itemsData = await readItems();
+const liveItems = publishableItems(itemsData);
+const items = liveItems.filter(item => item.categoryId === category.id);
+
+const prices = items.map(item => item.price).filter(Number.isFinite);
+const money = n => new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  maximumFractionDigits: 0
+}).format(n);
+const priceSummary = prices.length ? `${money(Math.min(...prices))}–${money(Math.max(...prices))}` : null;
+
+// Materials actually named across this category, for a description that says
+// something specific rather than repeating the category name.
+const materials = [...new Set(items.map(primaryMaterial).filter(Boolean))].slice(0, 4);
+const materialPhrase = materials.length ? ` in ${materials.join(', ').toLowerCase()}` : '';
+
+const title = `${category.name} — ${items.length} solid-wood pieces | Quillovan Furniture`;
+const description = `Browse ${items.length} Quillovan ${category.name.toLowerCase()}${materialPhrase}. ${priceSummary ? `${priceSummary}. ` : ''}${category.subtitle}. Prices and availability in the page source.`;
+
+const categorySchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${site}/${category.id}#breadcrumb`,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${site}/` },
+        { "@type": "ListItem", "position": 2, "name": category.name, "item": `${site}/${category.id}` }
+      ]
+    },
+    {
+      "@type": "CollectionPage",
+      "@id": `${site}/${category.id}#page`,
+      "name": `${category.name} — Quillovan Furniture`,
+      "description": description,
+      "url": `${site}/${category.id}`,
+      "isPartOf": { "@id": `${site}/#website` },
+      "about": { "@id": `${site}/#store` },
+      "mainEntity": {
+        "@type": "ItemList",
+        "@id": `${site}/${category.id}#list`,
+        "name": category.name,
+        "numberOfItems": items.length,
+        "itemListElement": items.map((item, index) => ({
+          "@type": "ListItem",
+          "position": index + 1,
+          "item": {
+            "@type": "Product",
+            "name": item.name,
+            "sku": item.id,
+            "category": item.category,
+            "description": item.description,
+            "url": `${site}/product/${item.slug}`,
+            "image": absoluteImage(item.image),
+            ...(primaryMaterial(item) ? { "material": primaryMaterial(item) } : {}),
+            "brand": { "@type": "Brand", "name": "Quillovan" },
+            "offers": {
+              "@type": "Offer",
+              "price": item.price,
+              "priceCurrency": "INR",
+              "availability": item.schemaAvailability,
+              "url": `${site}/product/${item.slug}`
+            }
+          }
+        }))
+      }
+    }
+  ]
+};
+---
+
+<Layout title={title} description={description} jsonLd={categorySchema} search={true}>
+  <main class="page-container" id="top">
+    <nav aria-label="Breadcrumb" class="crumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li aria-hidden="true">·</li>
+        <li aria-current="page">{category.name}</li>
+      </ol>
+    </nav>
+
+    <header class="category-head">
+      <h1>{category.name}</h1>
+      <p class="category-lede">{category.subtitle}.</p>
+      <p class="category-meta">
+        {items.length} {items.length === 1 ? 'piece' : 'pieces'} in the catalogue
+        {priceSummary && <> · {priceSummary}</>}
+        · Handmade in {placeLabel()}
+      </p>
+    </header>
+
+    {items.length === 0 ? (
+      <p class="empty">Nothing in this category yet. <a href="/browse">Browse the full catalogue</a>.</p>
+    ) : (
+      <ul class="category-grid">
+        {items.map((item, index) => (
+          <li>
+            <ProductCard item={item} priority={index < 4} />
+          </li>
+        ))}
+      </ul>
+    )}
+
+    <p class="category-more">
+      Looking for something else? <a href="/browse">Browse every category</a>.
+    </p>
+  </main>
+</Layout>
+
+<style>
+  .crumb {
+    padding: 32px 0 0;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .crumb ol {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .category-head {
+    padding: 20px 0 32px;
+  }
+  .category-head h1 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(38px, 5vw, 58px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .category-lede {
+    margin-top: 14px;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    max-width: 62ch;
+    text-wrap: pretty;
+  }
+  .category-meta {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-subtle);
+  }
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .category-more,
+  .empty {
+    margin: 48px 0 0;
+    font-size: 15px;
+    color: var(--text-muted);
+  }
+</style>

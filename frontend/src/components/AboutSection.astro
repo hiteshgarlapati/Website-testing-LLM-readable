@@ -1,10 +1,23 @@
 ---
+import {
+  BUSINESS,
+  addressLines,
+  contactEmail,
+  contactPhone,
+  deliveryPolicy,
+  placeLabel,
+  telHref
+} from '../lib/business.js';
+
+const lines = addressLines();
+const phone = contactPhone();
+const email = contactEmail();
 ---
 <section id="about" aria-labelledby="about-h" class="about-section">
   <div class="about-col-main">
     <h2 id="about-h" class="about-title">About us</h2>
     <p>
-      Oakline is a two-person shop. Dana mills and joins; Peter finishes and delivers. We have made furniture on Wealthy Street since 2014, from hardwood bought within 200 miles of the shop.
+      Quillovan is a two-person shop. Dana mills and joins; Peter finishes and delivers. We have made furniture in {placeLabel()} since {BUSINESS.foundedYear}, from hardwood bought within {BUSINESS.sourcingRadiusKm} km of the shop.
     </p>
     <p style="margin-top: 16px;">
       Every joint is mechanical — mortise, tenon, dovetail — so a piece can be taken apart and repaired instead of replaced. Send us a photo if something breaks, whenever that happens; repairs on our own work are free for the first ten years.
@@ -14,13 +27,13 @@
   <div class="about-col-contact">
     <h3 class="overline-header">Visit or write</h3>
     <ul class="contact-list">
-      <li>418 Wealthy Street SE<br />Grand Rapids, MI 49503</li>
+      {lines.length > 0 && <li set:html={lines.join('<br />')} />}
       <li>Tuesday–Saturday, 10am–6pm</li>
-      <li><a href="tel:+16165550142">(616) 555-0142</a></li>
-      <li><a href="mailto:shop@oaklinefurniture.example">shop@oaklinefurniture.example</a></li>
+      {phone && <li><a href={telHref()}>{phone}</a></li>}
+      {email && <li><a href={`mailto:${email}`}>{email}</a></li>}
     </ul>
     <p class="delivery-note">
-      Free delivery and assembly within 90 miles. Flat-rate $180 crating anywhere else in the lower 48.
+      {deliveryPolicy()}
     </p>
   </div>
 </section>

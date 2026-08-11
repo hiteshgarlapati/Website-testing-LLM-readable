@@ -1,4 +1,4 @@
-# Oakline Furniture
+# Quillovan Furniture
 
 AI-crawlable furniture catalogue (Astro) with **Excel admin import**. Built for LLM / search-agent readability testing.
 
@@ -56,7 +56,7 @@ Site: **http://localhost:8004** (or your `PORT`).
 
 ```bash
 cp .env.example .env
-export DATA_DIR=/var/lib/oakline/data   # mkdir -p $DATA_DIR/images
+export DATA_DIR=/var/lib/quillovan/data   # mkdir -p $DATA_DIR/images
 mkdir -p frontend && cd frontend
 npm ci && npm run build
 SITE_URL=... ADMIN_SECRET=... DATA_DIR=... npm run start
@@ -87,4 +87,4 @@ See [GODADDY.md](./GODADDY.md). Import Excel locally, then `npm run build` and u
 
 ## License
 
-Copyright © 2026 Oakline Furniture. All rights reserved.
+Copyright © 2026 Quillovan Furniture. All rights reserved.

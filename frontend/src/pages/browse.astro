@@ -5,6 +5,8 @@ import { readItems } from '../lib/itemsStore.js';
 import { absoluteUrl, siteOrigin } from '../lib/urls.js';
 import { buildRows } from '../lib/catalogue.js';
 import { publishableItems } from '../lib/publishable.js';
+import { placeLabel } from '../lib/business.js';
+import { primaryMaterial } from '../lib/material.js';
 
 export const prerender = false;
 
@@ -22,12 +24,12 @@ const browseSchema = {
   "@context": "https://schema.org",
   "@type": "CollectionPage",
   "@id": `${site}/browse#page`,
-  "name": "Browse the Oakline Furniture catalogue",
-  "description": "All Oakline pieces by category — sofas, chairs, tables and beds, with prices and availability in the page source.",
+  "name": "Browse the Quillovan Furniture catalogue",
+  "description": "All Quillovan pieces by category — sofas, chairs, tables and beds, with prices and availability in the page source.",
   "url": `${site}/browse`,
   "isPartOf": {
     "@type": "WebSite",
-    "name": "Oakline Furniture",
+    "name": "Quillovan Furniture",
     "url": `${site}/`
   },
   "hasPart": rows.map(row => ({
@@ -47,12 +49,12 @@ const browseSchema = {
         "description": item.description,
         "url": `${site}/product/${item.slug}`,
         "image": absoluteImage(item.image),
-        "material": item.specs[0] || "Solid wood",
-        "brand": { "@type": "Brand", "name": "Oakline" },
+        ...(primaryMaterial(item) ? { "material": primaryMaterial(item) } : {}),
+        "brand": { "@type": "Brand", "name": "Quillovan" },
         "offers": {
           "@type": "Offer",
           "price": item.price,
-          "priceCurrency": "USD",
+          "priceCurrency": "INR",
           "availability": item.schemaAvailability,
           "url": `${site}/product/${item.slug}`
         }
@@ -63,8 +65,8 @@ const browseSchema = {
 ---
 
 <Layout
-  title="Browse the catalogue — Oakline Furniture, Grand Rapids, Michigan"
-  description="Browse every Oakline piece by category: sofas, chairs, tables and beds. Filterable, with prices and availability in the page source."
+  title={`Browse the catalogue — Quillovan Furniture, ${placeLabel()}`}
+  description="Browse every Quillovan piece by category: sofas, chairs, tables and beds. Filterable, with prices and availability in the page source."
   jsonLd={browseSchema}
   search={true}
 >
@@ -72,7 +74,7 @@ const browseSchema = {
     <div class="browse-head">
       <p class="crumb"><a href="/">Home</a> · Browse</p>
       <h1>Browse the catalogue</h1>
-      <p class="browse-lede">Four categories. Twelve slots are filled today; the rest are reserved for pieces still on the bench. Scroll each row with the arrows or by dragging.</p>
+      <p class="browse-lede">Four categories, {liveItems.length} pieces in the catalogue today. Scroll each row with the arrows or by dragging.</p>
     </div>
 
     <CatalogueRows items={liveItems} headingId="browse-h" heading="Products" resetHref="/browse" />

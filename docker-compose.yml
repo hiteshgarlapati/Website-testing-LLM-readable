@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
       target: production
       args:
-        SITE_URL: ${SITE_URL:-https://oaklinefurniture.example}
+        SITE_URL: ${SITE_URL:-https://quillovan.com}
     image: oakline-furniture:production
     container_name: oakline-furniture-app
     restart: unless-stopped
@@ -15,7 +15,7 @@ services:
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: 4321
-      SITE_URL: ${SITE_URL:-https://oaklinefurniture.example}
+      SITE_URL: ${SITE_URL:-https://quillovan.com}
       ADMIN_SECRET: ${ADMIN_SECRET:-}
       DATA_DIR: /app/data
     volumes:

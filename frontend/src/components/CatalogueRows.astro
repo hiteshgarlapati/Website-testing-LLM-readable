@@ -2,6 +2,9 @@
 import ProductCard from './ProductCard.astro';
 import SlotCard from './SlotCard.astro';
 import { buildRows, slotTotals } from '../lib/catalogue.js';
+import { contactEmail } from '../lib/business.js';
+
+const shopEmail = contactEmail();
 
 export interface Props {
   items: any[];
@@ -55,11 +58,13 @@ const totals = slotTotals(rows);
       </p>
     </div>
 
-    {rows.map(row => (
+    {rows.map((row, rowIndex) => (
       <section id={row.id} data-row={row.id} aria-labelledby={`${row.id}-h`} class="category-row">
         <div class="row-head">
           <div class="row-head-left">
-            <h3 id={`${row.id}-h`}>{row.name}</h3>
+            {/* Links the row to its own indexable page rather than leaving the
+                category reachable only as an on-page anchor. */}
+            <h3 id={`${row.id}-h`}><a href={`/${row.id}`}>{row.name}</a></h3>
             <p class="row-subtitle">{row.subtitle}</p>
           </div>
           <p class="row-filled">{row.filled.length} of {row.total} slots filled</p>
@@ -69,9 +74,11 @@ const totals = slotTotals(rows);
           <button type="button" data-scroll="prev" aria-label={`Scroll ${row.name} left`} aria-controls={`${row.id}-track`} hidden class="scroll-btn prev">‹</button>
 
           <ul id={`${row.id}-track`} class="track" data-track>
-            {row.filled.map(item => (
+            {row.filled.map((item, cardIndex) => (
               <li data-slot={item.id} data-search={item.searchText}>
-                <ProductCard item={item} />
+                {/* Only the first row's opening cards are above the fold, so
+                    they are the LCP candidates worth loading eagerly. */}
+                <ProductCard item={item} priority={rowIndex === 0 && cardIndex < 4} />
               </li>
             ))}
             {row.open.map(open => (
@@ -87,8 +94,9 @@ const totals = slotTotals(rows);
     ))}
 
     <p id="no-match" hidden class="no-match">
-      Nothing matches those filters. <a href={resetHref}>Reset</a>, or
-      <a href="mailto:shop@oaklinefurniture.example">email the shop</a> — we take custom commissions.
+      Nothing matches those filters. <a href={resetHref}>Reset</a>{shopEmail && (
+        <>, or <a href={`mailto:${shopEmail}`}>email the shop</a></>
+      )} — we take custom commissions.
     </p>
   </div>
 </div>

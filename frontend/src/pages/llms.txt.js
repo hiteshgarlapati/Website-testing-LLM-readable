@@ -1,6 +1,16 @@
 import { readItems } from '../lib/itemsStore.js';
 import { absoluteUrl, siteOrigin } from '../lib/urls.js';
 import { publishableItems } from '../lib/publishable.js';
+import {
+  BUSINESS,
+  SITE_CANARY,
+  addressLines,
+  contactEmail,
+  contactPhone,
+  deliveryPolicy,
+  placeLabel,
+  sourcingPolicy
+} from '../lib/business.js';
 
 export const prerender = false;
 
@@ -39,21 +49,32 @@ export async function GET(context) {
     return `### ${cat.name} (${cat.subtitle})\n\n${entries.join('\n\n')}`;
   }).filter(Boolean);
 
-  const body = `# Oakline Furniture — LLM Plain Text Knowledge Catalogue
+  // Contact and address lines are omitted rather than guessed while business.js
+  // still holds placeholders, so this file never states a fact the site cannot back.
+  const storeDetails = [
+    `- **Name:** ${BUSINESS.name}`,
+    `- **Website:** ${site}/`,
+    addressLines().length ? `- **Location:** ${addressLines().join(', ')}` : null,
+    `- **Country:** India`,
+    `- **Currency:** INR (₹)`,
+    `- **Hours:** Tuesday–Saturday, 10am–6pm`,
+    contactPhone() ? `- **Phone:** ${contactPhone()}` : null,
+    contactEmail() ? `- **Email:** ${contactEmail()}` : null,
+    `- **Craftspeople:** Dana (milling & joining) and Peter (finishing & delivery)`,
+    `- **Materials:** Hardwood (solid white oak, walnut, maple, cherry, ash) ${sourcingPolicy()}. Mechanical joinery (mortise, tenon, dovetail).`,
+    `- **Warranty & Repair:** Repairs on Quillovan pieces are free for the first 10 years.`,
+    `- **Delivery Policy:** ${deliveryPolicy()}`
+  ].filter(Boolean).join('\n');
 
-> Solid-wood beds, chairs, tables and sofas made in small batches in Grand Rapids, Michigan. ${items.length} pieces, built to order.
+  const body = `# Quillovan Furniture — LLM Plain Text Knowledge Catalogue
+
+> Solid-wood beds, chairs, tables and sofas made in small batches in ${placeLabel()}. ${items.length} pieces, built to order. Prices in Indian rupees (INR).
 
 ## Store Details
-- **Name:** Oakline Furniture
-- **Website:** ${site}/
-- **Location:** 418 Wealthy Street SE, Grand Rapids, MI 49503
-- **Hours:** Tuesday–Saturday, 10am–6pm
-- **Phone:** +1 (616) 555-0142
-- **Email:** shop@oaklinefurniture.example
-- **Craftspeople:** Dana (milling & joining) and Peter (finishing & delivery)
-- **Materials:** Hardwood (solid white oak, walnut, maple, cherry, ash) purchased within 200 miles of the shop. Mechanical joinery (mortise, tenon, dovetail).
-- **Warranty & Repair:** Repairs on Oakline pieces are free for the first 10 years.
-- **Delivery Policy:** Free delivery and assembly within 90 miles. Flat-rate $180 crating anywhere else in the lower 48 US states.
+${storeDetails}
+
+## Site Reference
+- **Canary:** ${SITE_CANARY}
 
 ## Machine-Readable Endpoints
 - **Browse all products:** ${site}/browse

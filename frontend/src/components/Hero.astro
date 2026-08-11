@@ -1,12 +1,21 @@
 ---
+import { BUSINESS, placeLabel, workshopLabel } from '../lib/business.js';
+
+export interface Props {
+  /** Live catalogue size, so the headline cannot go stale as stock grows. */
+  pieceCount?: number;
+}
+
+const { pieceCount } = Astro.props;
+const headlineCount = pieceCount ? `${pieceCount} pieces` : 'A short catalogue';
 ---
 <section aria-labelledby="intro-h" class="hero-section">
   <div class="hero-headline">
-    <p class="meta-overline">Grand Rapids, Michigan · Est. 2014</p>
-    <h1 id="intro-h" class="main-title">Beds, chairs, tables and sofas. Twelve pieces, nothing else.</h1>
+    <p class="meta-overline">{placeLabel()} · Est. {BUSINESS.foundedYear}</p>
+    <h1 id="intro-h" class="main-title">Beds, chairs, tables and sofas. {headlineCount}, nothing else.</h1>
   </div>
   <p class="hero-description">
-    We keep one small catalogue and build every order by hand in our shop on Wealthy Street. Everything on this page is in stock or made to order in four to six weeks, shipped flat-packed or delivered fully assembled within Michigan.
+    We keep one small catalogue and build every order by hand in {workshopLabel()}. Everything on this page is in stock or made to order in four to six weeks, shipped flat-packed or delivered fully assembled across India.
   </p>
 </section>
 

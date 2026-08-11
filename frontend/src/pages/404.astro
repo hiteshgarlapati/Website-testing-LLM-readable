@@ -1,0 +1,86 @@
+---
+/**
+ * Custom 404. Marked noindex so the error page itself never enters the index,
+ * but it still links into the real catalogue so a crawler that lands here has
+ * somewhere to go rather than hitting a dead end.
+ */
+import Layout from '../layouts/Layout.astro';
+import { CATEGORIES } from '../lib/catalogue.js';
+
+export const prerender = false;
+---
+
+<Layout
+  title="Page not found — Quillovan Furniture"
+  description="That page does not exist. Browse the Quillovan catalogue of solid-wood beds, chairs, tables and sofas."
+  noindex={true}
+>
+  <main class="page-container not-found" id="top">
+    <p class="code">404</p>
+    <h1>That page has moved on.</h1>
+    <p class="lede">
+      The address you followed does not match anything in the catalogue. Nothing here is
+      hidden behind a script, so if a piece exists you can reach it from the links below.
+    </p>
+
+    <ul class="links">
+      {CATEGORIES.map(category => (
+        <li><a href={`/${category.id}`}>{category.name}</a></li>
+      ))}
+      <li><a href="/browse">Browse everything</a></li>
+      <li><a href="/about">About the shop</a></li>
+    </ul>
+
+    <p class="fallback">
+      Or start again from the <a href="/">home page</a>.
+    </p>
+  </main>
+</Layout>
+
+<style>
+  .not-found {
+    padding: 80px 0 96px;
+    max-width: 62ch;
+  }
+  .code {
+    font-family: var(--font-serif);
+    font-size: 14px;
+    letter-spacing: 0.18em;
+    color: var(--text-subtle);
+  }
+  .not-found h1 {
+    margin-top: 12px;
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(34px, 5vw, 52px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .lede {
+    margin-top: 16px;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    text-wrap: pretty;
+  }
+  .links {
+    margin: 32px 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+  }
+  .links a {
+    display: inline-block;
+    padding: 8px 14px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 999px;
+    font-size: 14px;
+  }
+  .fallback {
+    margin-top: 28px;
+    font-size: 15px;
+    color: var(--text-muted);
+  }
+</style>

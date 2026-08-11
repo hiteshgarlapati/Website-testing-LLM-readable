@@ -401,6 +401,18 @@ header {
   font-size: 27px;
 }
 
+.row-head h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.row-head h3 a:hover,
+.row-head h3 a:focus-visible {
+  color: var(--accent-terracotta);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .row-subtitle,
 .row-filled {
   font-size: 14px;
@@ -520,9 +532,21 @@ footer {
 .footer-legal {
   max-width: var(--page-max);
   margin: 0 auto;
-  padding: 0 28px 36px;
+  padding: 0 28px 8px;
   font-size: 14px;
   color: var(--text-subtle);
+}
+
+/* Visible (not hidden) so search engines index it as body text. Kept quiet
+   rather than display:none — hidden text reads as cloaking to a crawler and
+   would not be indexed anyway, defeating the purpose. */
+.footer-canary {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 0 28px 36px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
 }
 
 @media (prefers-reduced-motion: reduce) {
