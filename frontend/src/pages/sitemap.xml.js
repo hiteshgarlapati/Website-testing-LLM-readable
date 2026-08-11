@@ -2,7 +2,7 @@ import { readItems } from '../lib/itemsStore.js';
 import { publishableItems } from '../lib/publishable.js';
 import { CATEGORIES } from '../lib/catalogue.js';
 
-export const prerender = false;
+export const prerender = true;
 
 // Falls back to the configured site when a request context has no origin.
 const DEFAULT_SITE = 'https://quillovan.com';

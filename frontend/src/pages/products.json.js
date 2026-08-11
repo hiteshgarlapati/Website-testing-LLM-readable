@@ -2,9 +2,10 @@ import { readItems } from '../lib/itemsStore.js';
 import { absoluteUrl } from '../lib/urls.js';
 import { publishableItems } from '../lib/publishable.js';
 
-export const prerender = false;
+export const prerender = true;
 
-// Pure JSON endpoint — served at runtime so admin uploads refresh without rebuild.
+// Built as a static file for Cloudflare Pages. Update the catalogue locally
+// (or via `npm run dev` /admin), commit, and redeploy to refresh this feed.
 // Image fields are absolute so LLM agents can fetch pictures by URL.
 export async function GET(context) {
   const itemsData = await readItems();

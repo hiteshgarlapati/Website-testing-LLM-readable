@@ -7,8 +7,8 @@ AI-crawlable furniture catalogue (Astro) with **Excel admin import**. Built for 
 - **Astro 7** + **Node adapter** (SSR catalogue + admin API)
 - Machine feeds: `/llms.txt`, `/products.json`, `/robots.txt`, `/sitemap.xml`
 - Schema.org JSON-LD on every page
-- **Production (recommended):** Docker → Node 22 + persistent catalogue volume
-- **Static-only (optional):** build and upload HTML — no live admin (see [GODADDY.md](./GODADDY.md))
+- **Production (recommended, free):** [Cloudflare Pages](./CLOUDFLARE.md) + `quillovan.com`
+- **Optional:** Docker / Node if you need live Excel admin on a VPS (see below)
 
 ## Prerequisites
 
@@ -31,7 +31,13 @@ SITE_URL=http://localhost:4321
 # ADMIN_SECRET=dev-secret   # required in production; optional locally
 ```
 
-## Production with Docker (recommended)
+## Production on Cloudflare Pages (recommended, free)
+
+See **[CLOUDFLARE.md](./CLOUDFLARE.md)** — connect GitHub, set `SITE_URL=https://quillovan.com`, attach the GoDaddy domain via Cloudflare nameservers.
+
+Public pages and feeds (`/`, `/browse`, `/products.json`, `/llms.txt`) are **prerendered**. Catalogue updates: import locally, commit, push.
+
+## Production with Docker (live admin on a VPS)
 
 Catalogue data and uploaded images persist in a Docker volume. Admin uploads apply **immediately** (no rebuild).
 

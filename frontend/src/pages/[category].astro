@@ -17,7 +17,11 @@ import { publishableItems } from '../lib/publishable.js';
 import { primaryMaterial } from '../lib/material.js';
 import { placeLabel } from '../lib/business.js';
 
-export const prerender = false;
+export const prerender = true;
+
+export function getStaticPaths() {
+  return CATEGORIES.map((entry) => ({ params: { category: entry.id } }));
+}
 
 const category = CATEGORIES.find(entry => entry.id === Astro.params.category);
 if (!category) {

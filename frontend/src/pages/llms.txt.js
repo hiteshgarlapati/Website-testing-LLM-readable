@@ -12,7 +12,7 @@ import {
   sourcingPolicy
 } from '../lib/business.js';
 
-export const prerender = false;
+export const prerender = true;
 
 const CATEGORIES = [
   { id: 'beds', name: 'Beds', subtitle: 'Slatted platforms in maple, oak and ash — no box spring needed' },

@@ -20,7 +20,14 @@ import {
 const inquiryEmail = contactEmail();
 const inquiryPhone = contactPhone();
 
-export const prerender = false;
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const itemsData = await readItems();
+  return publishableItems(itemsData).map((entry) => ({
+    params: { slug: entry.slug }
+  }));
+}
 
 const slug = Astro.params.slug;
 const itemsData = await readItems();
