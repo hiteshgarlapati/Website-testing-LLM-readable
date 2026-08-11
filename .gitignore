@@ -30,5 +30,3 @@ Thumbs.db
 .vercel/
 frontend/.vercel/
 
-# Generated data exports
-exports/
