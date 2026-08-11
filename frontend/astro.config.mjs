@@ -9,7 +9,7 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url));
 // Setting SITE_URL repoints every absolute URL the site emits — canonical,
 // OpenGraph, JSON-LD @ids, sitemap, robots — at the live domain.
 const env = loadEnv(process.env.NODE_ENV || 'development', __dirname, '');
-const SITE_URL = env.SITE_URL || 'https://oaklinefurniture.example';
+const SITE_URL = process.env.SITE_URL || env.SITE_URL || 'https://quillovan.com';
 
 /** Trust Host / X-Forwarded-* for SSR origin checks when behind TLS reverse proxies. */
 function allowedDomainsFromSiteUrl(siteUrl) {

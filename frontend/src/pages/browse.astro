@@ -8,7 +8,7 @@ import { publishableItems } from '../lib/publishable.js';
 import { placeLabel } from '../lib/business.js';
 import { primaryMaterial } from '../lib/material.js';
 
-export const prerender = false;
+export const prerender = true;
 
 const site = siteOrigin(Astro.site);
 const absoluteImage = (img) => absoluteUrl(site, img);

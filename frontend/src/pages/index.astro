@@ -26,7 +26,7 @@ const orderAnswer = orderRoutes.length
   ? `Orders are placed directly with the shop ${orderRoutes.join(' or ')}, since each piece is built in a small custom batch.`
   : 'Orders are placed directly with the shop, since each piece is built in a small custom batch.';
 
-export const prerender = false;
+export const prerender = true;
 
 const site = siteOrigin(Astro.site);
 const absoluteImage = (img) => absoluteUrl(site, img);

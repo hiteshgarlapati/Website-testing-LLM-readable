@@ -1,0 +1,18 @@
+# Cloudflare Pages headers (https://developers.cloudflare.com/pages/configuration/headers/)
+
+/images/*
+  Cache-Control: public, max-age=604800
+
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=300
+
+/products.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300
+
+/robots.txt
+  Content-Type: text/plain; charset=utf-8
+
+/sitemap.xml
+  Content-Type: application/xml; charset=utf-8

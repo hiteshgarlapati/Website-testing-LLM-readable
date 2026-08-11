@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Project mission
 
-This repo is a **realistic furniture catalogue mockup** (Oakline Furniture) whose **main agenda** is testing how well **AI crawlers, search agents, and LLMs** can read and use the site—not building full ecommerce (checkout, accounts, payments).
+This repo is a **realistic furniture catalogue mockup** (Quillovan Furniture) whose **main agenda** is testing how well **AI crawlers, search agents, and LLMs** can read and use the site—not building full ecommerce (checkout, accounts, payments).
 
 ## When editing, prioritize
 
