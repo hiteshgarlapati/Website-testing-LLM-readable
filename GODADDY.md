@@ -46,9 +46,9 @@ cp .env.example .env
 docker compose up -d --build
 ```
 
-Point your domain at the container port (reverse proxy with TLS recommended).
+Point your domain at the container port (reverse proxy with TLS recommended). See `docker/nginx-reverse-proxy.conf.example`.
 
-Catalogue data is stored in the `catalogue_data` Docker volume (`items.json` + images).
+Catalogue data is stored in the `catalogue_data` Docker volume (`items.json` + images). On each container start, bundled seed images are merged into the volume and an empty `items.json` is restored from the image build.
 
 ## Notes
 

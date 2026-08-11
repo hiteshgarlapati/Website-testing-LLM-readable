@@ -255,7 +255,7 @@ const adminLocked = adminAuthRequired() && !adminSecretConfigured;
       body.append('file', file);
       if (secretInput && secretInput.value) body.append('secret', secretInput.value);
 
-      fetch('/api/admin/import/' + category, { method: 'POST', body: body })
+      fetch('/api/admin/import/' + category, { method: 'POST', body: body, credentials: 'same-origin' })
         .then(function (res) {
           return res.text().then(function (text) {
             var data;

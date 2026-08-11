@@ -5,10 +5,13 @@ services:
       dockerfile: Dockerfile
       target: production
       args:
+        # Baked into HTML/JSON-LD at image build time — rebuild after changing SITE_URL
         SITE_URL: ${SITE_URL:-https://quillovan.com}
     image: oakline-furniture:production
     container_name: oakline-furniture-app
     restart: unless-stopped
+    env_file:
+      - .env
     ports:
       - "${PORT:-8004}:4321"
     environment:
@@ -18,6 +21,7 @@ services:
       SITE_URL: ${SITE_URL:-https://quillovan.com}
       ADMIN_SECRET: ${ADMIN_SECRET:-}
       DATA_DIR: /app/data
+      SEED_DIR: /app/seed
     volumes:
       - catalogue_data:/app/data
     networks:

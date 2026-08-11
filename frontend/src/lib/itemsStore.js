@@ -2,11 +2,13 @@ import fs from 'node:fs';
 import fsPromises from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { dataRoot, itemsJsonPath, productImagesDir } from './paths.js';
+import { bundledSeedItemsJson, dataRoot, itemsJsonPath, productImagesDir } from './paths.js';
 
 const LIB_DIR = path.dirname(fileURLToPath(import.meta.url));
 
 function bundledItemsSeed() {
+  const fromSeed = bundledSeedItemsJson();
+  if (fromSeed) return fromSeed;
   const candidates = [
     path.join(LIB_DIR, '../data/items.json'),
     path.join(process.cwd(), 'src/data/items.json'),
