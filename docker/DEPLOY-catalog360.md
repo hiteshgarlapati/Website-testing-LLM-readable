@@ -3,7 +3,7 @@
 Live symptoms (empty browse, wrong links in `llms.txt`, upload CSRF):
 
 - [`/products.json`](https://catalog360.4sightai.com/products.json) is `[]`
-- [`/llms.txt`](https://catalog360.4sightai.com/llms.txt) still shows `https://oaklinefurniture.example/`
+- [`/llms.txt`](https://catalog360.4sightai.com/llms.txt) still shows `https://quillovan.com/`
 - [`/admin`](https://catalog360.4sightai.com/admin) shows **0 products live**
 
 That means the **Node app is running**, but the **catalogue volume has no publishable products** (empty or missing `items.json` / images) and the image was **built with the wrong `SITE_URL`**.
