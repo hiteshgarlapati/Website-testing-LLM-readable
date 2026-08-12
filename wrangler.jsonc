@@ -1,0 +1,37 @@
+{
+  // Cloudflare Workers static-assets deploy for quillovan.com.
+  //
+  // The newer Workers build flow has no "output directory" field in the
+  // dashboard, so the folder to publish is declared here instead. Without this
+  // file the build succeeds and the deploy then fails, because Cloudflare has
+  // no way to learn that frontend/dist/client is the site.
+  //
+  // Build command (set in the Cloudflare dashboard):
+  //   npm ci && npm run build
+  // Environment variables to set there:
+  //   SITE_URL=https://quillovan.com
+  //   NODE_VERSION=22
+  //
+  // No "main" entry: this is an assets-only deploy with no Worker script. The
+  // /admin page and /api/admin/* routes are prerender = false and build into
+  // dist/server, which is not uploaded — they are unavailable on this target by
+  // design. Catalogue edits happen locally and ship through a rebuild.
+  "name": "website-testing-llm-readable",
+  "compatibility_date": "2026-08-12",
+
+  "assets": {
+    "directory": "./frontend/dist/client",
+
+    // Serves /sofas from sofas.html and redirects /sofas.html to /sofas, which
+    // matches trailingSlash: 'never' and build.format: 'file' in
+    // frontend/astro.config.mjs. Without it the canonical URLs the site emits
+    // (all extensionless) would not resolve.
+    "html_handling": "auto-trailing-slash",
+
+    // Serves the custom 404.html with a real 404 status for unknown paths.
+    // The default ("none") returns a bare Cloudflare error page instead, and a
+    // crawler hitting a dead link would never see the links back into the
+    // catalogue that /404 provides.
+    "not_found_handling": "404-page"
+  }
+}
