@@ -1,5 +1,20 @@
 # Cloudflare Pages headers (https://developers.cloudflare.com/pages/configuration/headers/)
 
+# Security headers. These were set by src/middleware.js on the Node/Docker
+# deploy, but middleware does not run for a static Pages build — those were
+# response headers, and static files cannot carry them. Re-declared here so the
+# static site keeps the same protections.
+#
+# Deliberately no Content-Security-Policy: the pages load Google Fonts and use
+# inline <style> and inline JSON-LD, so a policy tight enough to be worth having
+# needs testing against a preview deploy first. Adding a broken one silently
+# breaks the fonts and the progressive-enhancement script.
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+
 /images/*
   Cache-Control: public, max-age=604800
 
