@@ -8,11 +8,24 @@
  * place.
  *
  * ─────────────────────────────────────────────────────────────────────────────
- * REPLACE EVERY `REPLACE_ME` BELOW BEFORE DEPLOYING.
+ * ⚠ THESE ARE DEMO VALUES. THIS IS NOT A REAL BUSINESS ADDRESS.
  *
- * Anything still set to REPLACE_ME is OMITTED from JSON-LD rather than guessed,
- * so the structured data stays truthful but incomplete until you fill it in.
- * Visible copy degrades to a generic phrasing ("across India") instead of
+ * quillovan.com is a test site, so the fields below are filled with the
+ * illustrative values this file already carried in its own comments — a fake
+ * street on a real city, so the SEO plumbing (LocalBusiness JSON-LD, the footer
+ * contact block, the order buttons on every product page) can be exercised
+ * end to end instead of silently rendering empty.
+ *
+ * REPLACE ALL OF THEM BEFORE TAKING A SINGLE REAL ORDER. A fabricated address
+ * or phone number in structured data is not a harmless placeholder once a site
+ * is indexed: Google cross-checks it against your Business Profile and
+ * third-party directories, mismatches suppress local ranking, and it is a
+ * common trigger for profile suspension. A stranger also answers a phone
+ * number you did not verify.
+ *
+ * The omit-rather-than-guess machinery below is intact. Setting any field back
+ * to REPLACE_ME drops it from JSON-LD instead of emitting something false, and
+ * visible copy degrades to a generic phrasing ("across India") rather than
  * naming a city that isn't yours.
  * ─────────────────────────────────────────────────────────────────────────────
  */
@@ -42,22 +55,33 @@ export const BUSINESS = {
   name: 'Quillovan Furniture',
   foundedYear: 2014,
 
-  // --- Physical location -----------------------------------------------------
-  streetAddress: PLACEHOLDER,   // e.g. '12 Residency Road'
-  addressLocality: PLACEHOLDER, // city, e.g. 'Bengaluru'
-  addressRegion: PLACEHOLDER,   // state, e.g. 'Karnataka'
-  postalCode: PLACEHOLDER,      // PIN, e.g. '560025'
+  // --- Physical location (DEMO — not a real address) --------------------------
+  // "Example Street" is deliberately not a real street: a plausible-looking one
+  // would eventually be somebody's actual building.
+  streetAddress: '1 Example Street, Indiranagar',
+  addressLocality: 'Bengaluru',
+  addressRegion: 'Karnataka',
+  postalCode: '560038',
   addressCountry: 'IN',
 
-  // --- Contact ---------------------------------------------------------------
+  // --- Contact (DEMO) --------------------------------------------------------
+  // Email is on the domain this site already owns, so the mailto: buttons on
+  // product pages resolve somewhere harmless.
+  //
+  // Phone stays unset on purpose. Every Indian landline pattern that looks
+  // realistic enough to be worth testing with is one a real person may answer,
+  // and the site publishes it as a tel: link on all 103 product pages. The
+  // email CTA alone proves the same code path. Set a number you actually
+  // control if you want the phone button rendered.
   telephone: PLACEHOLDER,       // E.164 preferred, e.g. '+91-80-4000-1234'
-  email: PLACEHOLDER,           // e.g. 'shop@yourdomain.in'
+  email: 'shop@quillovan.com',
 
-  // --- Map pin ---------------------------------------------------------------
-  // Leave null until you have the real pin (copy it from your Google Business
-  // Profile). An assistant answering "furniture shops near me" trusts these
-  // literally, so a guessed coordinate is worse than no coordinate.
-  geo: null,                    // { latitude: 12.9716, longitude: 77.5946 }
+  // --- Map pin (DEMO) --------------------------------------------------------
+  // The Bengaluru city centroid, not a building. An assistant answering
+  // "furniture shops near me" trusts this literally, so on a real launch it
+  // must come from your Google Business Profile or go back to null — a guessed
+  // coordinate is worse than no coordinate.
+  geo: { latitude: 12.9716, longitude: 77.5946 },
 
   // --- Trading terms ---------------------------------------------------------
   openingHours: 'Tu-Sa 10:00-18:00',
