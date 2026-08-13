@@ -138,7 +138,9 @@ const finalJsonLd = jsonLd ? jsonLd : storeSchema;
         <a href="/about" class="btn-pill">About</a>
         <a href="/llms.txt" target="_blank" rel="noopener" class="btn-pill btn-ai-pill" title="AI/LLM readable text format">llms.txt</a>
         <a href="/products.json" target="_blank" rel="noopener" class="btn-pill btn-ai-pill" title="Structured product JSON">products.json</a>
-        <a href="/admin" class="btn-pill btn-admin">Admin</a>
+        {/* No /admin link here on purpose. A link in the site-wide header put the
+            admin route in front of every crawler that reads any page; it is now
+            reachable only by typing the URL. */}
       </nav>
     </div>
   </header>
